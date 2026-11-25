@@ -207,7 +207,13 @@ textarea.field{min-height:96px;line-height:1.5}
 
 /* mode */
 .mode{display:flex;flex-direction:column;gap:6px;width:100%;border-radius:26px;padding:18px 20px;text-align:left;color:var(--ink);background:var(--card);animation:fadeUp .4s ease both;box-shadow:inset 0 0 0 0 var(--indigo);transition:box-shadow .2s,transform .2s}
-.mode.on{box-shadow:inset 0 0 0 3px var(--indigo);transform:translateY(-3px)}
+.mode{position:relative;padding-right:60px;cursor:pointer;box-shadow:0 3px 0 rgba(42,26,110,.12),inset 0 0 0 2px rgba(42,26,110,.16)}
+.mode:hover{box-shadow:0 4px 0 rgba(42,26,110,.16),inset 0 0 0 2px rgba(42,26,110,.34)}
+.mode:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(42,26,110,.12),inset 0 0 0 2px rgba(42,26,110,.34)}
+.mode .rd{position:absolute;top:20px;right:18px;width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--indigo);display:grid;place-items:center}
+.mode.on .rd{background:var(--indigo)}
+.mode.on .rd:after{content:"";width:11px;height:6px;border:solid #fff;border-width:0 0 2.5px 2.5px;transform:rotate(-45deg) translate(1px,-1px)}
+.mode.on{box-shadow:0 3px 0 rgba(42,26,110,.2),inset 0 0 0 3px var(--indigo);transform:translateY(-3px)}
 .mode b{font-size:19px;font-weight:600}
 .mode span{font-size:13px;color:var(--muted);line-height:1.45}
 .mode .ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;margin-bottom:4px}
@@ -220,7 +226,7 @@ textarea.field{min-height:96px;line-height:1.5}
 .mt b{font-size:15px;line-height:1.25;font-weight:600}
 .mt small{font-size:12px;color:var(--muted-on);line-height:1.35}
 .mt svg{width:34px;height:34px;fill:none;stroke:var(--indigo);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.mt.wide{grid-column:1/-1;min-height:72px;flex-direction:row;align-items:center}
+.mt.wide{grid-column:1/-1;min-height:72px;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px}
 .need{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:58px;border-radius:18px;background:var(--card);padding:0 16px;text-align:left;font-size:14.5px;font-weight:500;color:var(--ink);animation:fadeUp .35s ease both}
 .need:after{content:"\203A";font-size:24px;color:var(--indigo)}
 
@@ -793,7 +799,7 @@ SC.arrive = function(){
 SC.intro = function(){
   var cards=[
     ['This is a guide. It is not a counsellor and it cannot diagnose.',
-     '<svg viewBox="0 0 300 246"><path d="M60 200C140 190 150 160 120 150C70 134 110 100 200 96" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-dasharray="2 22"/><g class="roll"><circle cx="64" cy="198" r="22" fill="#7B61FF" opacity=".22"/><circle cx="64" cy="198" r="12" fill="#7B61FF"/></g></svg>'],
+     '<svg viewBox="0 0 300 246"><path d="M60 200C140 190 150 160 120 150C70 134 110 100 200 96" pathLength="100" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-dasharray="0.01 7.1428"/><circle cx="200" cy="96" r="6" fill="#fff"/><g><circle r="22" fill="#7B61FF" opacity=".22"/><circle r="12" fill="#7B61FF"/><animateMotion path="M60 200C140 190 150 160 120 150C70 134 110 100 200 96" dur="2.4s" begin="0s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.45 0 0.2 1"/></g></svg>'],
     ['A counsellor reviews flagged sessions.',
      '<svg viewBox="0 0 300 246"><path d="M40 216C110 210 120 190 160 186" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-dasharray="2 22"/><circle cx="46" cy="214" r="11" fill="#7B61FF"/><path d="M150 206V96l56-44l56 44v110z" fill="#F7C3D6"/><rect class="win" x="178" y="104" width="56" height="60" rx="10" fill="#B9A8EE"/><circle cx="206" cy="128" r="10" fill="#2A1A6E"/><path d="M188 164c2-20 34-20 36 0z" fill="#2A1A6E"/></svg>'],
     ['You don’t need an account. You can see and delete what this holds at any time.',
@@ -811,7 +817,7 @@ SC.usemode = function(){
     ['anon','var(--sky)','Explore anonymously','No login. This chat is deleted when you close it. A counsellor only sees something if you send them a note, or if the guide sees signs you may be in danger.','<svg viewBox="0 0 24 24"><path d="M3 12s3.5-6 9-6s9 6 9 6s-3.5 6-9 6s-9-6-9-6z"/><path d="M4 20L20 4"/></svg>'],
     ['pers','var(--pink)','Use personalised support','Keeps what helped you, your saved activities and check-ins, under a private code instead of your name.','<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>']
   ];
-  return {bg:'paper', html:'<h1>How would you like to use Campus Guide?</h1>'+m.map(function(x,n){ return '<button class="mode '+(S.useMode===x[0]?'on':'')+'" data-act="usemode" data-v="'+x[0]+'" style="animation-delay:'+(n*.09)+'s"><span class="ic" style="background:'+x[1]+'">'+x[4]+'</span><b>'+x[2]+'</b><span>'+x[3]+'</span></button>'; }).join('')+'<p class="sub">You can change this at any time.</p><button class="link" data-act="go" data-to="trust">Who sees what?</button><div class="push"><button class="pill" id="umGo" data-act="umNext" '+(S.useMode?'':'disabled')+'>Continue</button></div>'};
+  return {bg:'paper', html:'<h1>How would you like to use Campus Guide?</h1>'+m.map(function(x,n){ return '<button class="mode '+(S.useMode===x[0]?'on':'')+'" data-act="usemode" data-v="'+x[0]+'" aria-pressed="'+(S.useMode===x[0])+'" style="animation-delay:'+(n*.09)+'s"><span class="rd" aria-hidden="true"></span><span class="ic" style="background:'+x[1]+'">'+x[4]+'</span><b>'+x[2]+'</b><span>'+x[3]+'</span></button>'; }).join('')+'<p class="sub">You can change this at any time.</p><button class="link" data-act="go" data-to="trust">Who sees what?</button><div class="push"><button class="pill" id="umGo" data-act="umNext" '+(S.useMode?'':'disabled')+'>Continue</button></div>'};
 };
 
 /* 3 ways (original + routes) */
@@ -1054,7 +1060,7 @@ function pwOffer(){
 }
 SC.quiz = function(){
   var q=S.sq, d=qDef(q.id), it=d.items[q.idx], o=it.o||d.o;
-  return {bg:'paper', html:'<div data-curated><p class="sub">'+esc(d.name)+' · '+(q.idx+1)+' of '+d.items.length+'</p>'+(d.stem?'<p class="sub">'+esc(d.stem)+'</p>':'')+'<p style="font-size:18px;font-weight:600;margin:10px 0">'+esc(it.q)+'</p><div class="choices">'+o.map(function(l,i){ return '<button class="pill ghost" data-act="qAns" data-v="'+i+'">'+esc(l)+'</button>'; }).join('')+'</div></div><div class="push"><button class="link" data-act="back">Stop for now</button></div>'};
+  return {bg:'paper', html:'<div data-curated><p class="sub">'+esc(d.name)+' · '+(q.idx+1)+' of '+d.items.length+'</p>'+(d.stem?'<p class="sub">'+esc(d.stem)+'</p>':'')+'<p style="font-size:18px;font-weight:600;margin:10px 0">'+esc(it.q)+'</p><div class="choices">'+o.map(function(l,i){ return '<button class="pill ghost" data-act="sqAns" data-v="'+i+'">'+esc(l)+'</button>'; }).join('')+'</div></div><div class="push"><button class="link" data-act="back">Stop for now</button></div>'};
 };
 SC.qres = function(){
   var r=S.lastRes, d=qDef(r.id), sc=Scoring.score(d,r.answers);
@@ -1151,7 +1157,7 @@ SC.map = function(){
     ['toolkit','var(--card)','My toolkit','What you’ve saved',IC.kit]
   ];
   return {bg:'paper', html:'<h1>Here’s what’s here</h1><div class="tiles">'+t.map(function(x,n){ return '<button class="mt" data-act="go" data-to="'+x[0]+'" style="background:'+x[1]+';animation-delay:'+(n*.05)+'s">'+x[4]+'<span><b>'+x[2]+'</b><br><small>'+x[3]+'</small></span></button>'; }).join('')+
-    '<button class="mt wide" data-act="go" data-to="urgent" style="background:var(--grey);animation-delay:.3s">'+IC.sos+'<span style="margin-left:12px"><b>Urgent help</b><br><small>Talk to someone right now</small></span></button></div>'+
+    '<button class="mt wide" data-act="go" data-to="urgent" style="background:var(--grey);animation-delay:.3s">'+IC.sos+'<span><b>Urgent help</b><br><small>Talk to someone right now</small></span></button></div>'+
     '<div class="push"><button class="link" data-act="go" data-to="lock">See what happens two days later</button></div>'};
 };
 SC.know = function(){
@@ -1261,10 +1267,11 @@ SC.menu = function(){
   if(st===2){ var s=r.min*60; return {bg:'yellow', amb:true, html:'<h1 style="font-size:24px">'+r.item+'</h1><div class="tring"><svg viewBox="0 0 250 250"><circle class="track" cx="125" cy="125" r="118"/><circle class="prog" id="tprog" cx="125" cy="125" r="118"/></svg><span class="t" id="tt">'+fmt(s)+'</span><span class="me">'+meStill()+'</span></div><p class="hint">'+(SND.on?'Keep this screen open. We’ll chime when it’s time.':'Keep this screen open. Turn sound on (top right) if you’d like a chime.')+'</p><div class="push">'+pill('I’ve done it','mEnd')+link('Stop here','actStop')+'</div>', after:mTimer}; }
   return {bg:'yellow', amb:true, html:'<h1 style="font-size:26px">How did that feel?</h1><div class="qopts">'+['A bit better','About the same','Harder than I thought'].map(function(t){ return '<button class="qopt '+(r.felt===t?'on':'')+'" data-act="mFelt" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div><p class="sec">Would you do it again?</p><div class="choices">'+['Yes','Maybe','No'].map(function(t){ return '<button class="chip '+(r.again===t?'on':'')+'" data-act="mAgain" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Finish','actDone',{dis:!r.felt})+'</div>'};
 };
-function tSave(){ var r=S.r, ta=document.getElementById('tIn'); if(ta) r.dec=ta.value.trim()||TEX[0];
-  phone.querySelectorAll('[data-opt]').forEach(function(el){ var v=el.value.trim(); if(v) r.opts[+el.dataset.opt]=v; });
+function tSave(){ var r=S.r, ta=document.getElementById('tIn'); if(ta) r.dec=ta.value.trim(); r.own=r.own||{};
+  phone.querySelectorAll('[data-opt]').forEach(function(el){ r.opts[+el.dataset.opt]=el.value.trim(); });
   phone.querySelectorAll('[data-know]').forEach(function(el){ r.know[+el.dataset.know]=el.value.trim(); });
-  phone.querySelectorAll('[data-find]').forEach(function(el){ r.find[+el.dataset.find]=el.value.trim(); }); }
+  phone.querySelectorAll('[data-find]').forEach(function(el){ r.find[+el.dataset.find]=el.value.trim(); });
+  phone.querySelectorAll('[data-own]').forEach(function(el){ r.own[+el.dataset.own]=el.value.trim(); }); }
 function fmt(s){ return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
 function mTimer(){ var total=S.r.min*60, end=Date.now()+total*1000, pr=document.getElementById('tprog'), tt=document.getElementById('tt');
   function tick(){ if(!document.getElementById('tt')) return; var left=Math.max(0,Math.ceil((end-Date.now())/1000)); tt.textContent=fmt(left); pr.style.strokeDashoffset=String(741*(left/total)); if(left<=0){ arp([523.25,659.25,783.99]); S.r.st=3; later(function(){ rerender(true); },1200); return; } later(tick,250); }
@@ -1331,19 +1338,20 @@ var TCOL=['var(--pink)','var(--sky)','var(--yellow)'];
 function tdef(o,k){ return (TDEF[o]&&TDEF[o][k])||(k==='acts'?['Ask someone who\u2019s been through this','Write down what I\u2019d need to start']:''); }
 SC.tree = function(){
   var r=S.r, st=r.st||0;
-  if(!r.opts) r.opts=['Apply for internships','Focus on my exams'];
-  r.know=r.know||{}; r.find=r.find||{}; r.act=r.act||{}; r.help=r.help||[];
+  if(!r.opts) r.opts=['',''];
+  r.know=r.know||{}; r.find=r.find||{}; r.act=r.act||{}; r.own=r.own||{}; r.step=r.step||{}; r.help=r.help||[];
+  var L=function(i){ return String.fromCharCode(65+i); };
+  var ph=function(o,k,g){ return (r.ex && tdef(o,k)) ? 'e.g. '+tdef(o,k) : g; }; // example text only ever shown as a hint, never as the student's own answer
   var dots='<div class="stepdots">'+[0,1,2,3,4].map(function(n){return '<i class="'+(n===st?'on':(n<st?'done':''))+'"></i>';}).join('')+'</div>';
-  if(st===0) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What are you deciding?</h1><p class="sub">Write it as a question, in your own words.</p><textarea class="field" id="tIn" maxlength="160">'+esc(r.dec||TEX[0])+'</textarea><p class="sec">Or start from an example</p><div class="qopts">'+TEX.slice(1).map(function(t){ return '<button class="qopt" data-act="tEx" data-v="'+esc(t)+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Next','tNext')+link('Stop here','actStop')+'</div>'};
-  if(st===1) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What are your realistic options?</h1><p class="sub">Two or three is enough.</p>'+r.opts.map(function(o,i){ return '<div class="row"><span class="tdot" style="background:'+TCOL[i]+'">'+String.fromCharCode(65+i)+'</span><input class="field" data-opt="'+i+'" maxlength="40" value="'+esc(o)+'" aria-label="Option '+String.fromCharCode(65+i)+'"></div>'; }).join('')+(r.opts.length<3?'<button class="pill ghost" data-act="tAdd">Add a third option</button>':'')+'<div class="push">'+pill('Next','tNext')+'</div>'};
-  if(st===2) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What do you know, and what do you still need to find out?</h1>'+r.opts.map(function(o,i){ return '<div class="panel tpanel" style="border-top:6px solid '+TCOL[i]+';animation-delay:'+(i*.06)+'s"><h2 data-notr>'+esc(o)+'</h2><label class="sec">I know</label><input class="field" data-know="'+i+'" maxlength="80" value="'+esc(r.know[i]!==undefined?r.know[i]:tdef(o,'know'))+'" placeholder="Something you\u2019re sure of"><label class="sec">I need to find out</label><input class="field" data-find="'+i+'" maxlength="80" value="'+esc(r.find[i]!==undefined?r.find[i]:tdef(o,'find'))+'" placeholder="Something you\u2019re unsure of"></div>'; }).join('')+'<div class="push">'+pill('Next','tNext')+'</div>'};
-  if(st===3){ var ready=r.opts.every(function(_,i){ return r.act[i]; });
-    return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">One small step for each option</h1><p class="sub">Something you could do this week, whichever way you go.</p>'+r.opts.map(function(o,i){ return '<div class="panel tpanel" style="border-top:6px solid '+TCOL[i]+';animation-delay:'+(i*.06)+'s"><h2 data-notr>'+esc(o)+'</h2><div class="qopts">'+tdef(o,'acts').map(function(t){ return '<button class="qopt '+(r.act[i]===t?'on':'')+'" data-act="tAct" data-v="'+i+'|'+esc(t)+'">'+t+'</button>'; }).join('')+'</div></div>'; }).join('')+'<div class="push">'+pill('Next','tNext',{dis:!ready})+'</div>'}; }
-  if(st===4) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What would help you choose?</h1><p class="sub">Pick any that fit.</p><div class="qopts">'+THELP.map(function(t){ return '<button class="qopt '+(r.help.indexOf(t)>-1?'on':'')+'" data-act="tHelp" data-v="'+esc(t)+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Draw my tree','tNext',{dis:!r.help.length})+'</div>'};
+  if(st===0) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What are you deciding?</h1><p class="sub">Write it as a question, in your own words.</p><textarea class="field" id="tIn" maxlength="160" placeholder="e.g. Should I apply for internships or focus on my exams?">'+esc(r.dec||'')+'</textarea><p class="sec">Or start from an example</p><div class="qopts">'+TEX.map(function(t){ return '<button class="qopt" data-act="tEx" data-v="'+esc(t)+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Next','tNext')+link('Stop here','actStop')+'</div>'};
+  if(st===1) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What are your realistic options?</h1><p class="sub">Two or three is enough.</p>'+r.opts.map(function(o,i){ return '<div class="row"><span class="tdot" style="background:'+TCOL[i]+'">'+L(i)+'</span><input class="field" data-opt="'+i+'" maxlength="40" value="'+esc(o)+'" placeholder="Option '+L(i)+'" aria-label="Option '+L(i)+'"></div>'; }).join('')+(r.opts.length<3?'<button class="pill ghost" data-act="tAdd">Add a third option</button>':'')+'<div class="push">'+pill('Next','tNext')+'</div>'};
+  if(st===2) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What do you know, and what do you still need to find out?</h1><p class="sub">Optional. Leave a box empty if nothing comes to mind.</p>'+r.opts.map(function(o,i){ return '<div class="panel tpanel" style="border-top:6px solid '+TCOL[i]+';animation-delay:'+(i*.06)+'s"><h2 data-notr>'+esc(o)+'</h2><label class="sec">I know</label><input class="field" data-know="'+i+'" maxlength="80" value="'+esc(r.know[i]||'')+'" placeholder="'+esc(ph(o,'know','Something you’re sure of'))+'"><label class="sec">I need to find out</label><input class="field" data-find="'+i+'" maxlength="80" value="'+esc(r.find[i]||'')+'" placeholder="'+esc(ph(o,'find','Something you’re unsure of'))+'"></div>'; }).join('')+'<div class="push">'+pill('Next','tNext')+'</div>'};
+  if(st===3) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">One small step for each option</h1><p class="sub">Something you could do this week, whichever way you go. Pick a suggestion or write your own.</p>'+r.opts.map(function(o,i){ return '<div class="panel tpanel" style="border-top:6px solid '+TCOL[i]+';animation-delay:'+(i*.06)+'s"><h2 data-notr>'+esc(o)+'</h2><div class="qopts">'+tdef(o,'acts').map(function(t){ return '<button class="qopt '+(r.act[i]===t&&!r.own[i]?'on':'')+'" data-act="tAct" data-v="'+i+'|'+esc(t)+'">'+t+'</button>'; }).join('')+'</div><input class="field" data-own="'+i+'" maxlength="80" value="'+esc(r.own[i]||'')+'" placeholder="Or write your own small step" aria-label="Your own small step for option '+L(i)+'"></div>'; }).join('')+'<div class="push">'+pill('Next','tNext')+'</div>'};
+  if(st===4) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What would help you choose?</h1><p class="sub">Pick any that fit, or none.</p><div class="qopts">'+THELP.map(function(t){ return '<button class="qopt '+(r.help.indexOf(t)>-1?'on':'')+'" data-act="tHelp" data-v="'+esc(t)+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Draw my tree','tNext')+'</div>'};
   var n=r.opts.length;
   var paths=r.opts.map(function(_,i){ var x=(i+0.5)*(300/n); return '<path class="tbranch" style="animation-delay:'+(.2+i*.15)+'s" d="M150 0V14Q150 26 '+x+' 30V44"/>'; }).join('');
-  var cols=r.opts.map(function(o,i){ return '<div class="tcol" style="animation-delay:'+(.5+i*.15)+'s"><div class="tnode" data-notr style="background:'+TCOL[i]+'">'+esc(o)+'</div>'+(r.know[i]?'<div class="tleaf"><small>Know</small><span data-notr>'+esc(r.know[i])+'</span></div>':'')+(r.find[i]?'<div class="tleaf"><small>Find out</small><span data-notr>'+esc(r.find[i])+'</span></div>':'')+'<div class="tleaf nx"><small>Next step</small>'+esc(r.act[i])+'</div></div>'; }).join('');
-  return {bg:'stage', amb:true, html:'<h1 style="font-size:24px">Your decision tree</h1><div class="troot" data-notr>'+esc(r.dec||TEX[0])+'</div><svg class="tsvg" viewBox="0 0 300 44" preserveAspectRatio="none" aria-hidden="true">'+paths+'</svg><div class="tcols" style="grid-template-columns:repeat('+n+',1fr)">'+cols+'</div><div class="panel"><span class="kicker">What would help you choose</span><p>'+r.help.map(esc).join(' \u00b7 ')+'</p><p class="why">There\u2019s no right answer here. The tree is yours to come back to once you know more.</p></div><div class="push">'+pill('Finish','actDone')+'</div>', after:function(){ arp([392,523.25,659.25],.15); }};
+  var cols=r.opts.map(function(o,i){ return '<div class="tcol" style="animation-delay:'+(.5+i*.15)+'s"><div class="tnode" data-notr style="background:'+TCOL[i]+'">'+esc(o)+'</div>'+(r.know[i]?'<div class="tleaf"><small>Know</small><span data-notr>'+esc(r.know[i])+'</span></div>':'')+(r.find[i]?'<div class="tleaf"><small>Find out</small><span data-notr>'+esc(r.find[i])+'</span></div>':'')+'<div class="tleaf nx"><small>Next step</small><span'+(r.own[i]?' data-notr':'')+'>'+esc(r.step[i])+'</span></div></div>'; }).join('');
+  return {bg:'stage', amb:true, html:'<h1 style="font-size:24px">Your decision tree</h1><div class="troot" data-notr>'+esc(r.dec)+'</div><svg class="tsvg" viewBox="0 0 300 44" preserveAspectRatio="none" aria-hidden="true">'+paths+'</svg><div class="tcols" style="grid-template-columns:repeat('+n+',1fr)">'+cols+'</div>'+(r.help.length?'<div class="panel"><span class="kicker">What would help you choose</span><p>'+r.help.map(esc).join(' · ')+'</p><p class="why">There’s no right answer here. The tree is yours to come back to once you know more.</p></div>':'<div class="panel"><p class="why">There’s no right answer here. The tree is yours to come back to once you know more.</p></div>')+'<div class="push">'+pill('Finish','actDone')+'</div>', after:function(){ arp([392,523.25,659.25],.15); }};
 };
 
 /* ---------- shared check-in after an activity (IMP doc section 6) ---------- */
@@ -1513,7 +1521,7 @@ var ACT = {
   introNext:function(){ if(S.introCard<2){ S.introCard++; go('intro',false); } else go('usemode'); },
   lang:function(t,v){ S.lang=v; go('intro',false); },
   umNext:function(){ go(S.useMode==='pers' ? 'contact' : 'ways'); },
-  usemode:function(t,v){ S.useMode=v; phone.querySelectorAll('.mode').forEach(function(m){ m.classList.toggle('on', m.dataset.v===v); }); document.getElementById('umGo').disabled=false; },
+  usemode:function(t,v){ S.useMode=v; phone.querySelectorAll('.mode').forEach(function(m){ m.classList.toggle('on', m.dataset.v===v); m.setAttribute('aria-pressed', m.dataset.v===v); }); document.getElementById('umGo').disabled=false; },
   feel:function(t,v){ var i=S.feelings.indexOf(v); if(i>-1) S.feelings.splice(i,1); else S.feelings.push(v);
     t.classList.toggle('on'); t.setAttribute('aria-pressed', i===-1); document.getElementById('grid').classList.toggle('has-pick', S.feelings.length>0); document.getElementById('feelGo').disabled = !S.feelings.length; },
   plate:function(t,v){ var j=S.plate.indexOf(v), added=j===-1; if(added) S.plate.push(v); else S.plate.splice(j,1);
@@ -1578,11 +1586,15 @@ var ACT = {
   bSmall:function(){ S.r.small=true; S.r.dur='5 minutes'; S.r.st=5; rerender(); toast('Made it smaller: just open the notes and find the first topic, for 5 minutes.'); },
   bRem:function(){ toast('<span class="tag">Prototype</span> A gentle, generic reminder would be set here.'); },
   /* decision tree */
-  tEx:function(t,v){ S.r.dec=v; var ta=document.getElementById('tIn'); if(ta) ta.value=v; if(v.indexOf('elective')>-1) S.r.opts=['The elective I enjoy','The one that helps placements']; else if(v.indexOf('roommate')>-1) S.r.opts=['Talk to my roommate','Let it go for now']; else S.r.opts=['Apply for internships','Focus on my exams']; S.r.know={}; S.r.find={}; S.r.act={}; chime(523.25,1,.05); },
-  tAdd:function(){ tSave(); S.r.opts.push('A bit of both'); rerender(); },
-  tAct:function(t,v){ var p=v.split('|'); S.r.act[+p[0]]=p[1]; chime(587.33,1,.05); rerender(); },
+  tEx:function(t,v){ S.r.dec=v; S.r.ex=true; var ta=document.getElementById('tIn'); if(ta) ta.value=v; if(v.indexOf('elective')>-1) S.r.opts=['The elective I enjoy','The one that helps placements']; else if(v.indexOf('roommate')>-1) S.r.opts=['Talk to my roommate','Let it go for now']; else S.r.opts=['Apply for internships','Focus on my exams']; S.r.know={}; S.r.find={}; S.r.act={}; S.r.own={}; chime(523.25,1,.05); },
+  tAdd:function(){ tSave(); S.r.opts.push(''); rerender(); },
+  tAct:function(t,v){ tSave(); var p=v.split('|'); S.r.act[+p[0]]=p[1]; S.r.own[+p[0]]=''; chime(587.33,1,.05); rerender(); },
   tHelp:function(t,v){ var a=S.r.help, i=a.indexOf(v); if(i>-1) a.splice(i,1); else a.push(v); rerender(); },
-  tNext:function(){ tSave(); S.r.st=(S.r.st||0)+1; chime(440,1,.05); rerender(); },
+  tNext:function(){ tSave(); var r=S.r, st=r.st||0;
+    if(st===0 && !r.dec){ toast('Write what you’re deciding, or pick an example.'); return; }
+    if(st===1){ var o=r.opts.filter(function(x){ return x; }); if(o.length<2){ toast('Add at least two options to compare.'); return; } r.opts=o; }
+    if(st===3){ r.step={}; var miss=false; r.opts.forEach(function(_,i){ var v=r.own[i]||r.act[i]; if(v) r.step[i]=v; else miss=true; }); if(miss){ toast('Pick or write one small step for each option.'); return; } }
+    r.st=st+1; chime(440,1,.05); rerender(); },
   /* 7 questions */
   qAns:function(t,v){ S.q[S.qi]=+v; rerender(); },
   qSkip:function(){ S.q[S.qi]=undefined; ACT.qNext(true); },

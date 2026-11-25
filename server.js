@@ -42,6 +42,8 @@ function enrich(r) {
     return { kind: 'scale', name: d.name, version: x.version, method: d.method === 'mean' ? 'mean of items' : d.method === 'sum4' ? 'sum x 4' : 'sum of items', date: x.date, score: sc.score, raw: sc.raw, max: d.max, flag: b && b.flag, label: b && b.label, descriptive: !!(b && b.descriptive), thresholdsApproved: !!d.approved, wordingVerified: !!d.wordingVerified };
   }) });
 }
+// The API's own error message (e.g. an unsupported parameter) - never anything a student typed.
+async function apiWhy(r) { try { const j = await r.json(); return ': ' + String((j.error && j.error.message) || '').slice(0, 160); } catch (e) { return ''; } }
 async function translate(body, req) {
   const L = LN[body.lang], strs = (Array.isArray(body.strings) ? body.strings : []).slice(0, 40).map(s => clip(s, 300)).filter(Boolean);
   if (!L || !strs.length) return { code: 400, out: { error: 'bad_request' } };
@@ -52,7 +54,7 @@ async function translate(body, req) {
     if (!allowed(req, 'translate')) return { code: 429, out: { error: 'busy' } }; // only calls that reach the model count; cached phrases are free
     const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: MODEL, max_tokens: 4000, system: 'Translate short interface texts of a student wellbeing app from English into ' + L + ' (Devanagari). Use simple, warm, everyday wording a student would actually say, not clinical or word-for-word. Keep numbers, punctuation and line breaks. Prefer these expressions when the concept appears (given in Roman letters, write them in Devanagari): ' + glossLine() + '. Reply with a JSON array of strings, same order and same length, and nothing else.', messages: [{ role: 'user', content: JSON.stringify(miss) }] }) });
-    if (!r.ok) throw new Error('anthropic ' + r.status);
+    if (!r.ok) throw new Error('anthropic ' + r.status + await apiWhy(r));
     const t = ((await r.json()).content || []).map(b => b.text || '').join(''); let out;
     try { out = JSON.parse(t.match(/\[[\s\S]*\]/)[0]); } catch (e) { out = null; }
     if (!Array.isArray(out) || out.length !== miss.length) return { code: 502, out: { error: 'bad_translation' } };
@@ -130,9 +132,9 @@ async function chat(body, req) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 800, system, messages: msgs, tools: [RESPOND], tool_choice: { type: 'tool', name: 'respond' } })
+    body: JSON.stringify({ model: MODEL, max_tokens: 800, system, messages: msgs, tools: [RESPOND], tool_choice: { type: 'auto' } })
   });
-  if (!r.ok) throw new Error('anthropic ' + r.status);
+  if (!r.ok) throw new Error('anthropic ' + r.status + await apiWhy(r));
   const blocks = (await r.json()).content || [], text = blocks.map(b => b.text || '').join('');
 
   const tu = blocks.find(b => b.type === 'tool_use'), o = tu ? tu.input : looseParse(text);
