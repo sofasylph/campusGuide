@@ -1,0 +1,24 @@
+{
+  "_note": "STARTER LIST ONLY. Counsellors must review and replace it, including Hindi and Marathi phrasings. 'escalate' goes straight to the Urgent screen. 'vet' words (from the team doc: kill, killing) get a second look by the AI and only escalate unless it is clearly an idiom; if the check fails, it escalates. 'clarify' makes the AI ask one gentle, neutral question. Entries are case-insensitive regular expressions.",
+  "escalate": [
+    "kill myself",
+    "want to die",
+    "end my life",
+    "suicid",
+    "better off without me",
+    "no reason to live",
+    "hurt myself",
+    "harm myself",
+    "don'?t want to be here"
+  ],
+  "clarify": [
+    "can'?t go on",
+    "no point",
+    "give up",
+    "disappear",
+    "tired of everything"
+  ],
+  "vet": [
+    "\\bkill(s|ed|ing)?\\b"
+  ]
+}

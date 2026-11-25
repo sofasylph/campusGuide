@@ -1,0 +1,50 @@
+{
+ "_note": "From the team Cultural Dictionary. Spellings are as written there, in Roman letters; they should be checked by Hindi and Marathi speakers. They guide the AI and the machine translator so everyday expressions are preferred over word-for-word clinical wording.",
+ "phrases": [
+  {
+   "concept": "Restlessness or unease",
+   "hi": "Bechaini",
+   "mr": "A-swasthata"
+  },
+  {
+   "concept": "Panicky feeling",
+   "hi": "Ghabrahat",
+   "mr": "Jeev ghabarto"
+  },
+  {
+   "concept": "Heaviness in the chest",
+   "hi": "Seene mein bhari-pan",
+   "mr": "Chhatit baddal vatte"
+  },
+  {
+   "concept": "Extreme tiredness or exhaustion",
+   "hi": "Thakan",
+   "mr": "Damlelo"
+  },
+  {
+   "concept": "I cannot think of anything / cannot focus",
+   "hi": "Man nahi lag raha",
+   "mr": "Kahi suchat nahi"
+  },
+  {
+   "concept": "Irritability",
+   "hi": "Chirchira-pan",
+   "mr": "Chid-chid hone"
+  },
+  {
+   "concept": "Worrying",
+   "hi": "Tension",
+   "mr": "Tension"
+  },
+  {
+   "concept": "Head feeling overloaded (meaning to be confirmed)",
+   "hi": "Dimag kharab",
+   "mr": "Dokyacha taap"
+  },
+  {
+   "concept": "Cannot get sleep",
+   "hi": "Neend udd gayi",
+   "mr": "Jhop udali"
+  }
+ ]
+}

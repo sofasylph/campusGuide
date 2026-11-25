@@ -1,0 +1,5 @@
+1. loss button doesnt respond well:
+     1. it shows an empty purple blob->should have an icon.
+     2. it teleports around when something else is removed
+     3. it fades in while everything else slides in. 
+     

@@ -1,0 +1,371 @@
+{
+ "_note": "Links from the design team's structure document (tracking parameters removed). All still marked pending counsellor review. ai:false keeps an item out of the AI's suggestions. url: https://... opens a new tab; app:breathe opens a screen here. Tags use the plate keys.",
+ "resources": [
+  {
+   "id": "general-guide",
+   "title": "Mental Health & Wellness Journal (general guide)",
+   "blurb": "A plain-language guide: understanding stress, breathing and grounding, big emotions, self-compassion, journal prompts and helplines. A good first read.",
+   "url": "guides/mental-health-wellness-journal.pdf",
+   "tags": [
+    "exams",
+    "sleep",
+    "family",
+    "friends",
+    "alone",
+    "money",
+    "loss",
+    "work",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "breathe-2min",
+   "title": "Breathe for two minutes",
+   "blurb": "A guided breathing exercise that opens here.",
+   "url": "app:breathe",
+   "tags": [
+    "exams",
+    "sleep",
+    "alone",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "tele-manas",
+   "title": "Tele-MANAS helpline: 14416",
+   "blurb": "Free, 24x7 national helpline in around 20 languages. Also 1-800-891-4416. For talking to someone off campus or at night.",
+   "url": "https://telemanas.mohfw.gov.in",
+   "tags": [
+    "exams",
+    "sleep",
+    "family",
+    "friends",
+    "alone",
+    "money",
+    "loss",
+    "work",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "book-counsellor",
+   "title": "Book a counsellor",
+   "blurb": "Placeholder: add the FLAME counselling centre booking page (not in the structure document).",
+   "url": "https://example.org/replace-me",
+   "tags": [
+    "exams",
+    "sleep",
+    "family",
+    "friends",
+    "alone",
+    "money",
+    "loss",
+    "work",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-procrastination",
+   "title": "Put off procrastinating (CCI workbook)",
+   "blurb": "Workbook on avoidance, excuses and action plans. For difficulty starting tasks.",
+   "url": "https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Procrastination",
+   "tags": [
+    "exams",
+    "work"
+   ],
+   "approved": false
+  },
+  {
+   "id": "nhs-cbt",
+   "title": "NHS self-help CBT techniques",
+   "blurb": "To-do lists, problem solving, reframing thoughts, managing worry. For feeling overwhelmed.",
+   "url": "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/",
+   "tags": [
+    "exams",
+    "work",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-perfectionism",
+   "title": "Perfectionism (CCI)",
+   "blurb": "Worksheets on rigid standards and fear of mistakes. For performance anxiety.",
+   "url": "https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Perfectionism",
+   "tags": [
+    "exams",
+    "work"
+   ],
+   "approved": false
+  },
+  {
+   "id": "who-dwm",
+   "title": "WHO: Doing What Matters in Times of Stress",
+   "blurb": "Illustrated guide with audio: grounding, unhooking from thoughts, self-kindness. For general stress.",
+   "url": "https://www.who.int/publications/i/item/9789240003927",
+   "tags": [
+    "exams",
+    "work",
+    "family",
+    "money",
+    "loss",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-worry",
+   "title": "Worry and rumination (CCI)",
+   "blurb": "Postponing worry, problem solving, accepting uncertainty. For overthinking and placement anxiety.",
+   "url": "https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Worry-and-Rumination",
+   "tags": [
+    "exams",
+    "sleep",
+    "work",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-distress",
+   "title": "Tolerating distress (CCI)",
+   "blurb": "Exercises for managing strong emotions without reacting straight away.",
+   "url": "https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Tolerating-Distress",
+   "tags": [
+    "family",
+    "friends",
+    "loss",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "who-sbs",
+   "title": "WHO Step-by-Step (needs human support)",
+   "blurb": "Structured five-module programme for low mood, meant to be used with human support. Not suggested by the AI.",
+   "url": "https://www.who.int/publications/i/item/B09738",
+   "tags": [
+    "other"
+   ],
+   "approved": false,
+   "ai": false
+  },
+  {
+   "id": "nhs-lonely",
+   "title": "NHS: feeling lonely",
+   "blurb": "Reconnecting, talking about loneliness, joining activities.",
+   "url": "https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/feeling-lonely/",
+   "tags": [
+    "alone",
+    "friends"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-assert",
+   "title": "Assert yourself (CCI)",
+   "blurb": "Setting boundaries, saying no, handling criticism. For friendship and family conflict.",
+   "url": "https://www.cci.health.wa.gov.au/en/Resources/Looking-After-Yourself/Assertiveness",
+   "tags": [
+    "friends",
+    "family"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-social",
+   "title": "Social anxiety (CCI)",
+   "blurb": "Negative thinking, avoidance and gradual practice in social situations.",
+   "url": "https://www.cci.health.wa.gov.au/Home/Resources/Looking-After-Yourself/Social-Anxiety",
+   "tags": [
+    "alone",
+    "friends"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-esteem",
+   "title": "Improving self-esteem (CCI)",
+   "blurb": "Self-doubt, negative self-talk and comparison with peers.",
+   "url": "https://www.cci.health.wa.gov.au/resources/looking-after-yourself/self-esteem",
+   "tags": [
+    "other",
+    "friends"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-compassion",
+   "title": "Self-compassion (CCI)",
+   "blurb": "Easing self-criticism, including a compassionate letter exercise.",
+   "url": "https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Self-Compassion",
+   "tags": [
+    "other",
+    "exams"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-appearance",
+   "title": "Appearance concerns (CCI)",
+   "blurb": "Body image worries and appearance-related distress.",
+   "url": "https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Appearance-Concerns",
+   "tags": [
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cdc-sleep",
+   "title": "CDC: about sleep",
+   "blurb": "Healthy sleep habits and routines.",
+   "url": "https://www.cdc.gov/sleep/about/",
+   "tags": [
+    "sleep"
+   ],
+   "approved": false
+  },
+  {
+   "id": "cci-sleep",
+   "title": "Sleep (CCI)",
+   "blurb": "Worksheets for trouble falling asleep and sleep-related worry.",
+   "url": "https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Sleep",
+   "tags": [
+    "sleep"
+   ],
+   "approved": false
+  },
+  {
+   "id": "nhs-five",
+   "title": "NHS: five steps to mental wellbeing",
+   "blurb": "Connecting, being active, learning, giving and paying attention to the present.",
+   "url": "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/five-steps-to-mental-wellbeing/",
+   "tags": [
+    "alone",
+    "work",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "staffs-videos",
+   "title": "Student self-help videos (Staffordshire)",
+   "blurb": "Short videos on homesickness, stress, confidence, procrastination, breathing and adjusting to change.",
+   "url": "https://www.staffs.ac.uk/students/support/student-wellbeing-and-safeguarding/self-help",
+   "tags": [
+    "alone",
+    "exams",
+    "friends",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "staffs-more",
+   "title": "More self-help videos (Staffordshire)",
+   "blurb": "Motivation, panic, relationships, sleep, stress and negative self-talk.",
+   "url": "https://www.staffslondon.ac.uk/students/support/student-wellbeing-and-safeguarding/self-help",
+   "tags": [
+    "exams",
+    "sleep",
+    "friends",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "ucsf-videos",
+   "title": "Resilience and wellbeing videos (UCSF)",
+   "blurb": "Grounding, brief mindful breathing, self-compassion and managing strong emotions.",
+   "url": "https://hr.ucsf.edu/wellbeing/coping-and-resiliency-program/cope-program-wellness-resources/resilience-and-emotional-well-being-video-series",
+   "tags": [
+    "loss",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "nhs-videos",
+   "title": "NHS Every Mind Matters: short videos",
+   "blurb": "Mindful breathing, reframing unhelpful thoughts, social connection and better sleep.",
+   "url": "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/top-tips-to-improve-your-mental-wellbeing/",
+   "tags": [
+    "sleep",
+    "alone",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "nimh-great",
+   "title": "NIMH: helpful practices for stress and anxiety",
+   "blurb": "Video from a clinical psychologist on managing stress.",
+   "url": "https://www.nimh.nih.gov/health/topics/caring-for-your-mental-health",
+   "tags": [
+    "exams",
+    "work",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "who-dwm-video",
+   "title": "WHO: Doing What Matters (video)",
+   "blurb": "Short introduction to the WHO stress guide.",
+   "url": "https://www.youtube.com/watch?v=E3Cts45FNrk",
+   "tags": [
+    "exams",
+    "work",
+    "family",
+    "money",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "manodarpan",
+   "title": "Manodarpan (Ministry of Education / NCERT)",
+   "blurb": "Student mental wellbeing programme from India.",
+   "url": "https://www.youtube.com/watch?v=TLzbwKVVUD0",
+   "tags": [
+    "exams",
+    "alone",
+    "family",
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "tm-iec",
+   "title": "Tele-MANAS awareness videos (JIPMER)",
+   "blurb": "Videos and materials about the national Tele-MANAS service.",
+   "url": "https://jipmer.edu.in/Tele-MANAS",
+   "tags": [
+    "other"
+   ],
+   "approved": false
+  },
+  {
+   "id": "ntf-directory",
+   "title": "National Task Force: student support directory",
+   "blurb": "Official directory with Tele-MANAS, Manodarpan and emergency contacts.",
+   "url": "https://ntf.education.gov.in/student-support-resources/",
+   "tags": [
+    "exams",
+    "sleep",
+    "family",
+    "friends",
+    "alone",
+    "money",
+    "loss",
+    "work",
+    "other"
+   ],
+   "approved": false
+  }
+ ]
+}

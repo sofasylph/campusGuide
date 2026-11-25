@@ -1,0 +1,1666 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Campus Guide v2</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one phone-sized stage, centred. Each screen is a full-height column: headline top, one choice, main action in the bottom third. */
+:root{
+  --violet:#7B61FF; --indigo:#2A1A6E; --ink:#1D1638; --muted:#6B6485;
+  --lilac:#DCD0F8; --paper:#F6F3EC; --card:#FFFFFF; --grey:#CFCBC2;
+  --pink:#F7C3D6; --sky:#BFE3F5; --yellow:#FFE27A; --white:#FFFFFF;
+  --stage:#E9E4F7; --stage-fg:#4A4370;
+  --font:'Poppins','Segoe UI',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --stage:#17122B; --stage-fg:#B9B0DC; color-scheme:dark } }
+:root[data-theme="dark"]{ --stage:#17122B; --stage-fg:#B9B0DC; color-scheme:dark }
+
+html,body{height:100%}
+body{background:var(--stage);color:var(--stage-fg);font-family:var(--font);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding-inline:16px;padding-block:12px;box-sizing:border-box}
+*{box-sizing:border-box}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--indigo);outline-offset:2px}
+
+.phone{position:relative;width:min(390px,100%);height:min(800px,100%);flex:1 1 auto;max-height:800px;background:var(--paper);color:var(--ink);border-radius:36px;overflow:hidden;display:flex;flex-direction:column;transition:background .35s ease}
+.proto-note{font-size:12px;margin:0;text-align:center}
+@media (max-width:480px){ body{padding-inline:0;padding-block:0} .phone{border-radius:0;max-height:none;height:100%} .proto-note{display:none} }
+
+.bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 4px;flex:0 0 auto}
+.back{width:44px;height:44px;border-radius:50%;font-size:26px;line-height:1;color:inherit}
+.exit{display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;background:var(--indigo);color:var(--white);font-size:13px;font-weight:500}
+.scr{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:16px;padding:8px 22px 18px;overflow-y:auto;animation:fadeUp .32s ease both}
+.strip{flex:0 0 auto;background:var(--lilac);color:var(--indigo);font-size:12px;text-align:center;padding:9px 12px}
+h1{font-size:30px;line-height:1.14;font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0;line-height:1.5}
+.sub{color:var(--muted);font-size:14px}
+.pill{display:block;width:100%;min-height:54px;border-radius:999px;background:var(--indigo);color:var(--white);font-size:16px;font-weight:600;padding:0 20px}
+.pill.ghost{background:transparent;color:var(--indigo);box-shadow:inset 0 0 0 2px var(--indigo)}
+.pill[disabled]{opacity:.35;cursor:default}
+.link{font-size:14px;color:inherit;text-decoration:underline;text-underline-offset:3px;padding:10px;align-self:center}
+.push{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--grey);color:var(--ink);border-radius:6px;padding:2px 6px;vertical-align:middle}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes rise{from{transform:translateY(760px)}to{transform:none}}
+@keyframes bob{0%,100%{transform:translateY(-3px)}50%{transform:translateY(4px)}}
+@keyframes drift{0%,100%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+@keyframes jitter{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg) translateY(-1px)}}
+@keyframes sink{0%,100%{transform:translateY(0)}50%{transform:translateY(6px) scaleY(.98)}}
+@keyframes twist{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes doze{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes zz{0%{opacity:0;transform:translate(0,6px)}40%{opacity:1}100%{opacity:0;transform:translate(8px,-14px)}}
+@keyframes redraw{to{stroke-dashoffset:-56}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.55}}
+@keyframes drop{0%{transform:translate(-50%,-190%) scale(.9);opacity:0}60%{transform:translate(-50%,-44%) scale(1.04);opacity:1}78%{transform:translate(-50%,-54%) rotate(-5deg)}100%{transform:translate(-50%,-50%)}}
+@keyframes settle{from{opacity:0}to{opacity:1}}
+
+/* characters */
+.ch{display:block;width:100%;height:auto;overflow:visible}
+.ch .eyes{transform-box:fill-box;transform-origin:center;animation:blink 4.6s infinite}
+.idle-sunny{animation:bob 3.2s ease-in-out infinite}
+.idle-foggy{animation:drift 6.5s ease-in-out infinite}
+.idle-buzzy{animation:jitter .38s ease-in-out infinite}
+.idle-heavy{animation:sink 5.2s ease-in-out infinite}
+.idle-knotted{animation:twist 4.2s ease-in-out infinite}
+.idle-sleepy{animation:doze 5s ease-in-out infinite}
+.ch .z{animation:zz 3s ease-out infinite}
+.ch .z2{animation-delay:1.5s}
+.ch .outline{animation:redraw 3s linear infinite}
+
+/* 1 arrival */
+.phone[data-bg="violet"]{background:var(--violet);color:var(--white)}
+.phone[data-bg="pink"]{background:var(--pink)}
+.phone[data-bg="sky"]{background:var(--sky)}
+.phone[data-bg="yellow"]{background:var(--yellow)}
+.phone[data-bg="lilac"]{background:var(--lilac)}
+.phone[data-bg="white"]{background:var(--white)}
+.arrive{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;overflow:hidden}
+.arrive h1{font-size:40px;position:relative;z-index:3}
+.arrive .sub{color:var(--white);opacity:.9;position:relative;z-index:3}
+.arrive .pill{background:var(--white);color:var(--indigo);max-width:240px;margin-top:18px;position:relative;z-index:3}
+.dot{width:16px;height:16px;border-radius:50%;background:var(--violet);box-shadow:0 0 0 6px rgba(123,97,255,.22);flex:0 0 auto}
+.arrive .dot{background:var(--white);box-shadow:0 0 0 7px rgba(255,255,255,.28);animation:pulse 2.4s ease-in-out infinite;margin-bottom:8px;position:relative;z-index:3}
+.clouds{position:absolute;left:-10%;right:-10%;bottom:-70px;height:170px;z-index:2}
+.clouds i{position:absolute;bottom:0;border-radius:50%;background:var(--lilac)}
+.riser{position:absolute;z-index:1;animation:rise 1.1s cubic-bezier(.2,.8,.3,1) both}
+
+/* 2 intro */
+.dots{display:flex;gap:6px;justify-content:center}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--grey)}
+.dots i.on{background:var(--violet);width:22px;border-radius:8px}
+.pic{background:var(--lilac);border-radius:28px;aspect-ratio:1/0.82;max-width:100%;display:grid;place-items:center;overflow:hidden}
+.pic svg{width:100%;height:100%}
+.roll{animation:roll 2.4s ease-in-out both}
+@keyframes roll{0%{transform:translate(0,0)}35%{transform:translate(70px,-34px)}70%{transform:translate(20px,-78px)}100%{transform:translate(96px,-112px)}}
+.win{animation:light 1.6s ease .5s both}
+@keyframes light{from{fill:#B9A8EE}to{fill:#FFE27A}}
+.fold{transform-box:fill-box;transform-origin:center bottom;animation:foldaway 2.2s ease .4s both}
+@keyframes foldaway{0%{transform:none}35%{transform:scaleY(.66)}65%{transform:scaleY(.36)}100%{transform:scaleY(.36) translateY(190px)}}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:40px;padding:0 14px;border-radius:999px;background:var(--card);font-size:13px;font-weight:500;color:var(--ink)}
+.chip.on{background:var(--indigo);color:var(--white)}
+
+/* 3 ways */
+.way{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:104px;border-radius:26px;padding:16px 20px;text-align:left;color:var(--ink);animation:fadeUp .4s ease both;transition:transform .2s ease}
+.way:active{transform:scale(1.03)}
+.way b{font-size:20px;font-weight:600;display:block;line-height:1.2}
+.way>span>span{font-size:13px;color:var(--muted)}
+.way svg{width:64px;height:64px;flex:0 0 auto;transition:transform .3s ease}
+.way:hover svg,.way:active svg{transform:rotate(-6deg) scale(1.08)}
+
+/* 4 check-in */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{background:var(--card);border-radius:22px;padding:10px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500;line-height:1.25;color:var(--ink);text-align:center;transition:transform .25s ease,opacity .25s ease,box-shadow .25s ease;min-height:150px}
+.tile .holder{width:92px;height:101px;display:grid;place-items:end center}
+.grid.has-pick .tile:not(.on){opacity:.5}
+.tile.on{transform:translateY(-5px);box-shadow:inset 0 0 0 3px var(--indigo)}
+.tile.wide{grid-column:1/-1;flex-direction:row;justify-content:center;min-height:64px;background:var(--grey);gap:12px;font-size:14px}
+.tile.wide .holder{width:44px;height:44px}
+
+/* 5 plate */
+.plate{position:relative;width:min(230px,70%);aspect-ratio:1;margin:0 auto;border-radius:50%;background:var(--card);box-shadow:inset 0 0 0 16px #EFEAE0;flex:0 0 auto}
+.tok{position:absolute;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;transform:translate(-50%,-50%);animation:drop .7s cubic-bezier(.3,.9,.4,1) both;color:var(--ink)}
+.tok svg,.card-opt svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card-opt{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 14px;border-radius:18px;background:var(--card);font-size:14px;font-weight:500;color:var(--ink);text-align:left}
+.card-opt.on{background:var(--indigo);color:var(--white)}
+.else{width:100%;min-height:48px;border-radius:16px;border:2px solid var(--indigo);background:var(--card);padding:0 14px;font:inherit;font-size:14px;color:var(--ink)}
+
+/* 6 chat */
+.chatbar{display:flex;align-items:center;gap:8px;padding:0 0 6px}
+.chatbar .me{width:46px;height:51px}
+.minitok{width:26px;height:26px;border-radius:50%;display:grid;place-items:center}
+.minitok svg{width:14px;height:14px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.log{display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:10px;align-items:flex-start;animation:fadeUp .35s ease both}
+.msg .dot{margin-top:14px;width:12px;height:12px;box-shadow:0 0 0 4px rgba(123,97,255,.2)}
+.msg .dot.writing{animation:pulse 1.3s ease-in-out infinite}
+.bubble{background:var(--card);border-radius:20px;padding:12px 15px;font-size:14.5px;line-height:1.5;min-width:0}
+.msg.me{justify-content:flex-end}
+.msg.me .bubble{background:var(--indigo);color:var(--white)}
+.excard{display:flex;align-items:center;gap:12px;background:var(--sky);border-radius:18px;padding:12px;margin:10px 0 2px;width:100%;text-align:left;color:var(--ink)}
+.excard .me{width:54px;height:59px;flex:0 0 auto}
+.excard b{display:block;font-size:14.5px}
+.excard>span>span{font-size:12.5px;color:var(--muted);display:block}
+.note{background:transparent;border:2px dashed var(--grey);border-radius:18px;padding:12px 14px;font-size:13px;color:var(--muted);animation:fadeUp .35s ease both}
+.replies{display:flex;flex-direction:column;gap:8px}
+.replies .pill{min-height:48px;font-size:14.5px;font-weight:500}
+
+/* 7 breathe */
+.breath{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:0}
+.ringwrap{position:relative;width:min(280px,78%);aspect-ratio:1;display:grid;place-items:center}
+.ringwrap>svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ringwrap circle{fill:none;stroke-width:5}
+.ringwrap .track{stroke:rgba(42,26,110,.15)}
+.ringwrap .prog{stroke:var(--indigo);stroke-linecap:round;stroke-dasharray:741;stroke-dashoffset:741}
+.breather{width:52%;transform:scale(.92);transition:transform 1s ease}
+.breather .eyes{animation:none;transition:transform 1.2s ease}
+.breather.out .eyes{transform:scaleY(.12)}
+.plainblob{width:100%;aspect-ratio:1;border-radius:50%;background:var(--violet)}
+.word{font-size:34px;font-weight:600;min-height:44px;color:var(--indigo)}
+.two{display:flex;gap:10px}
+.two .pill{flex:1}
+
+
+/* ===================== v2 additions ===================== */
+:root{ --muted-on:#4A4366; --night:#1D1638 }
+/* contrast fixes */
+.way>span>span,.excard>span>span{color:var(--muted-on)}
+.arrive .sub{opacity:1;font-size:19px;font-weight:600;line-height:1.3;max-width:290px}
+.phone[data-bg="pink"] .sub,.phone[data-bg="sky"] .sub,.phone[data-bg="yellow"] .sub,.phone[data-bg="lilac"] .sub,.phone[data-bg="lime"] .sub{color:var(--muted-on)}
+.phone[data-bg="lime"]{background:#C6E58A}
+.phone[data-bg="night"]{background:var(--night);color:#fff}
+
+/* top bar: sound */
+.bar .right{display:flex;align-items:center;gap:8px}
+.snd{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(42,26,110,.1);color:var(--indigo);transition:background .2s,color .2s}
+.snd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.snd[aria-pressed="true"]{background:var(--indigo);color:#fff}
+.snd .wave{opacity:0;transition:opacity .2s}.snd[aria-pressed="true"] .wave{opacity:1}.snd[aria-pressed="true"] .mute{opacity:0}
+
+/* shared */
+.toast{position:absolute;left:16px;right:16px;bottom:16px;z-index:30;background:var(--ink);color:#fff;border-radius:16px;padding:12px 14px;font-size:13px;line-height:1.45;animation:toastIn .3s ease both;box-shadow:0 10px 30px rgba(29,22,56,.25)}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.tag.sample{background:var(--white);color:var(--indigo)}
+.phone[data-bg="paper"] .tag.sample{background:var(--lilac)}
+.progress{height:6px;border-radius:6px;background:rgba(42,26,110,.14);overflow:hidden;flex:0 0 auto}
+.progress i{display:block;height:100%;background:var(--indigo);border-radius:6px;transition:width .45s ease}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--indigo)}
+.why{font-size:12.5px;color:var(--muted-on);line-height:1.45}
+.qopts{display:flex;flex-direction:column;gap:8px}
+.qopt{min-height:52px;border-radius:18px;background:var(--card);padding:12px 16px;text-align:left;font-size:14.5px;font-weight:500;color:var(--ink);transition:background .2s,color .2s,transform .15s;animation:fadeUp .35s ease both}
+.qopt.on{background:var(--indigo);color:#fff}
+.qopt:active{transform:scale(.98)}
+.qopt small{display:block;font-size:12.5px;font-weight:400;opacity:.8;margin-top:2px}
+.field{width:100%;min-height:52px;border-radius:16px;border:2px solid var(--indigo);background:var(--card);padding:12px 14px;font:inherit;font-size:14.5px;color:var(--ink);resize:none}
+textarea.field{min-height:96px;line-height:1.5}
+.row{display:flex;gap:8px;align-items:center}
+.row .field{flex:1}
+.sq{min-width:52px;height:52px;border-radius:16px;background:var(--indigo);color:#fff;font-size:22px;font-weight:600}
+.panel{background:var(--card);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px;animation:fadeUp .35s ease both}
+.panel h2{font-size:17px;margin:0;font-weight:600}
+.sec{font-size:13px;font-weight:600;color:var(--ink);margin-top:4px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border-radius:18px;padding:12px 14px;font-size:14px;text-align:left;width:100%;color:var(--ink)}
+.switch i{width:44px;height:26px;border-radius:999px;background:var(--grey);position:relative;flex:0 0 auto;transition:background .2s}
+.switch i:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .25s cubic-bezier(.3,.9,.4,1)}
+.switch[aria-pressed="true"] i{background:var(--indigo)}
+.switch[aria-pressed="true"] i:after{transform:translateX(18px)}
+
+/* mode */
+.mode{display:flex;flex-direction:column;gap:6px;width:100%;border-radius:26px;padding:18px 20px;text-align:left;color:var(--ink);background:var(--card);animation:fadeUp .4s ease both;box-shadow:inset 0 0 0 0 var(--indigo);transition:box-shadow .2s,transform .2s}
+.mode.on{box-shadow:inset 0 0 0 3px var(--indigo);transform:translateY(-3px)}
+.mode b{font-size:19px;font-weight:600}
+.mode span{font-size:13px;color:var(--muted);line-height:1.45}
+.mode .ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;margin-bottom:4px}
+.mode .ic svg{width:24px;height:24px;fill:none;stroke:var(--indigo);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* map / know */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mt{border-radius:22px;padding:14px;min-height:118px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;color:var(--ink);animation:fadeUp .4s ease both;transition:transform .2s}
+.mt:active{transform:scale(.97)}
+.mt b{font-size:15px;line-height:1.25;font-weight:600}
+.mt small{font-size:12px;color:var(--muted-on);line-height:1.35}
+.mt svg{width:34px;height:34px;fill:none;stroke:var(--indigo);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mt.wide{grid-column:1/-1;min-height:72px;flex-direction:row;align-items:center}
+.need{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:58px;border-radius:18px;background:var(--card);padding:0 16px;text-align:left;font-size:14.5px;font-weight:500;color:var(--ink);animation:fadeUp .35s ease both}
+.need:after{content:"\203A";font-size:24px;color:var(--indigo)}
+
+/* library */
+.lib{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lcard{border-radius:22px;padding:8px 8px 12px;text-align:left;display:flex;flex-direction:column;gap:6px;color:var(--ink);animation:fadeUp .4s ease both;transition:transform .2s}
+.lcard:active{transform:scale(.97)}
+.lcard .mini{border-radius:16px;aspect-ratio:300/246;overflow:hidden;background:rgba(255,255,255,.55)}
+.lcard .mini svg{width:100%;height:100%;display:block}
+.lcard b{font-size:14px;line-height:1.25;padding:0 4px}
+.lcard small{font-size:11.5px;color:var(--muted-on);padding:0 4px}
+.chips-row{display:flex;gap:6px;flex-wrap:wrap}
+.chips-row .chip{min-height:44px;font-size:13px}
+.meta{display:flex;gap:6px;flex-wrap:wrap}
+.meta span{font-size:12px;font-weight:500;background:rgba(255,255,255,.75);border-radius:999px;padding:4px 10px;color:var(--ink)}
+.evid{background:rgba(255,255,255,.75);border-radius:18px;padding:12px 14px;font-size:12.5px;line-height:1.45;color:var(--ink)}
+.evid b{display:block;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--indigo);margin-bottom:2px}
+.pic.big{aspect-ratio:300/246}
+
+/* runner common */
+.stepdots{display:flex;gap:5px;justify-content:center}
+.stepdots i{width:7px;height:7px;border-radius:50%;background:rgba(42,26,110,.22);transition:all .3s}
+.stepdots i.on{width:20px;border-radius:7px;background:var(--indigo)}
+.stepdots i.done{background:var(--indigo)}
+.bigword{font-size:30px;font-weight:600;color:var(--indigo);text-align:center;min-height:40px}
+.center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.hint{font-size:13px;color:var(--muted-on);text-align:center}
+
+/* PMR */
+.pmr-wrap{position:relative;width:min(240px,64%);margin:4px auto 0;aspect-ratio:1;display:grid;place-items:center}
+.pmr-wrap .halo{position:absolute;inset:8%;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(.9);transition:transform 1.2s ease,background 1.2s ease}
+.pmr-wrap.release .halo{transform:scale(1.08);background:rgba(255,255,255,.7)}
+.pmr-me{position:relative;width:70%;transition:transform 1.4s ease}
+.pmr-me .eyes{animation:none;transition:transform .8s ease}
+.pmr-wrap.tense .pmr-me{animation:tense .45s ease-in-out infinite}
+.pmr-wrap.release .pmr-me .eyes{transform:scaleY(.12)}
+@keyframes tense{0%,100%{transform:scale(1.05,.9)}50%{transform:scale(1.07,.88) rotate(1.2deg)}}
+.parts{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.parts i{font-style:normal;font-size:12px;font-weight:500;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.6);color:var(--ink);transition:all .3s}
+.parts i.on{background:var(--indigo);color:#fff;transform:translateY(-2px)}
+.parts i.done{background:var(--card);color:var(--muted-on)}
+.meter{width:min(240px,70%);height:8px;border-radius:8px;background:rgba(42,26,110,.14);overflow:hidden;margin:0 auto}
+.meter i{display:block;height:100%;width:0;background:var(--indigo);border-radius:8px}
+
+/* grounding */
+.ground{position:relative;width:min(250px,70%);aspect-ratio:1;margin:0 auto;display:grid;place-items:center}
+.ground .rip{position:absolute;inset:0;border-radius:50%;border:3px solid rgba(42,26,110,.25);animation:ripple 3.6s ease-out infinite}
+.ground .rip:nth-child(2){animation-delay:1.2s}.ground .rip:nth-child(3){animation-delay:2.4s}
+@keyframes ripple{from{transform:scale(.35);opacity:1}to{transform:scale(1.05);opacity:0}}
+.ground .core{width:46%;position:relative}
+.senses{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:6px 0}
+.sense{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 2px rgba(42,26,110,.28);display:grid;place-items:center;transition:transform .35s cubic-bezier(.3,.9,.4,1),background .3s,box-shadow .3s;font-size:12px;font-weight:600;color:var(--indigo)}
+.sense.on{transform:scale(1.12);box-shadow:none;color:var(--ink)}
+.sense svg{width:24px;height:24px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.feet{display:flex;gap:16px;justify-content:center;align-items:flex-end;height:120px}
+.foot{width:46px;height:96px;border-radius:24px 24px 22px 22px;background:var(--indigo);animation:press 2.4s ease-in-out infinite;transform-origin:bottom}
+.foot:last-child{animation-delay:.3s}
+@keyframes press{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.9)}}
+.floor{height:10px;border-radius:10px;background:rgba(42,26,110,.25);width:min(220px,64%);margin:0 auto}
+
+/* parking lot */
+.lot{position:relative;background:#3B3360;border-radius:24px;height:200px;overflow:hidden;flex:0 0 auto}
+.lot .bay{position:absolute;top:0;bottom:30px;width:33.33%;border-right:3px dashed rgba(255,255,255,.35)}
+.lot .bay:nth-child(3){border-right:0}
+.lot .lab{position:absolute;bottom:0;height:30px;width:33.33%;display:grid;place-items:center;font-size:11px;font-weight:600;color:#fff;background:rgba(0,0,0,.18)}
+.lot .gate{position:absolute;left:50%;top:-12px;width:80px;height:24px;margin-left:-40px;border-radius:0 0 14px 14px;background:rgba(255,255,255,.12)}
+.car{position:absolute;width:58px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.car:before,.car:after{content:"";position:absolute;bottom:-5px;width:12px;height:8px;border-radius:4px;background:#1D1638}
+.car:before{left:8px}.car:after{right:8px}
+.car.new{animation:park 1s cubic-bezier(.3,.8,.3,1) both}
+@keyframes park{from{transform:translate(var(--fx),var(--fy)) rotate(var(--fr))}70%{transform:translate(0,-6px) rotate(2deg)}to{transform:none}}
+.car.wait{animation:idlecar 1.6s ease-in-out infinite}
+@keyframes idlecar{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.worry{background:var(--card);border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;animation:fadeUp .35s ease both}
+.worry p{font-size:14px;font-weight:500;display:flex;gap:8px;align-items:center}
+.worry .num{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:700;flex:0 0 auto}
+.bays{display:flex;gap:6px;flex-wrap:wrap}
+.bays .chip{min-height:44px;font-size:12.5px;background:var(--paper)}
+.bays .chip.on{background:var(--indigo)}
+
+/* activity menu & timer */
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cat{border-radius:18px;padding:12px;text-align:left;color:var(--ink);min-height:74px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s,box-shadow .2s;animation:fadeUp .35s ease both}
+.cat.on{box-shadow:inset 0 0 0 3px var(--indigo);transform:translateY(-2px)}
+.cat b{font-size:14px}.cat small{font-size:11.5px;color:var(--muted-on)}
+.dur{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dur button{min-height:64px;border-radius:18px;background:var(--card);font-size:13px;color:var(--ink);font-weight:500}
+.dur button b{display:block;font-size:20px}
+.dur button.on{background:var(--indigo);color:#fff}
+.tring{position:relative;width:min(240px,66%);aspect-ratio:1;margin:0 auto;display:grid;place-items:center}
+.tring>svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.tring circle{fill:none;stroke-width:8}
+.tring .track{stroke:rgba(42,26,110,.15)}
+.tring .prog{stroke:var(--indigo);stroke-linecap:round;stroke-dasharray:741;stroke-dashoffset:741;transition:stroke-dashoffset 1s linear}
+.tring .t{font-size:40px;font-weight:600;color:var(--indigo);position:relative;font-variant-numeric:tabular-nums}
+.tring .me{position:absolute;width:38%;bottom:-6%;right:-4%}
+
+/* coping card */
+.cc-stage{perspective:900px;width:100%;max-width:300px;margin:0 auto}
+.cc{position:relative;width:100%;aspect-ratio:1.45;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,.8,.3,1)}
+.cc.flip{transform:rotateY(180deg)}
+.cc .face{position:absolute;inset:0;border-radius:24px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;backface-visibility:hidden;-webkit-backface-visibility:hidden;color:var(--ink);box-shadow:0 14px 30px rgba(42,26,110,.15)}
+.cc .face-b{transform:rotateY(180deg)}
+.cc .face q{font-size:19px;font-weight:600;line-height:1.3;quotes:none}
+.cc .face small{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-on)}
+.cc.build{animation:ccIn .7s cubic-bezier(.3,.9,.4,1) both}
+@keyframes ccIn{from{opacity:0;transform:translateY(40px) rotate(-6deg) scale(.9)}to{opacity:1;transform:none}}
+.swatches{display:flex;gap:10px;justify-content:center}
+.swatches button{width:44px;height:44px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(42,26,110,.15)}
+.swatches button.on{box-shadow:inset 0 0 0 3px var(--indigo)}
+.spark{position:absolute;width:10px;height:10px;border-radius:50%;pointer-events:none;animation:spark .9s ease-out forwards;z-index:5}
+@keyframes spark{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--sx),var(--sy)) scale(.2);opacity:0}}
+
+/* SFN */
+.box3{display:flex;flex-direction:column;gap:8px}
+.box3 .b{background:var(--card);border-radius:18px;padding:12px 14px;animation:fadeUp .4s ease both}
+.box3 .b small{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--indigo)}
+.box3 .b p{font-size:14.5px;margin-top:2px}
+.draft{background:var(--card);border-radius:18px;padding:14px;font-size:14.5px;line-height:1.5;border:2px dashed var(--indigo)}
+
+/* break it down */
+.stairs{position:relative;height:150px;flex:0 0 auto}
+.stairs .s{position:absolute;bottom:0;width:20%;border-radius:12px 12px 0 0;background:var(--indigo);transform-origin:bottom;animation:grow .6s cubic-bezier(.3,.9,.4,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.stairs .hop{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--violet);box-shadow:0 0 0 6px rgba(123,97,255,.22);transition:left .5s ease,bottom .5s cubic-bezier(.3,1.6,.5,1)}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:16px;padding:12px 14px;font-size:14px;text-align:left;color:var(--ink);animation:fadeUp .35s ease both;transition:background .2s,color .2s}
+.step .n{width:26px;height:26px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font-size:12px;font-weight:700;flex:0 0 auto}
+.step.on{background:var(--indigo);color:#fff}.step.on .n{background:#fff;color:var(--indigo)}
+.plan{background:var(--card);border-radius:22px;padding:16px;font-size:16px;line-height:1.6;font-weight:500}
+.plan .blank{display:inline-block;background:var(--yellow);border-radius:8px;padding:0 6px;font-weight:600}
+.pickrow{display:flex;gap:6px;flex-wrap:wrap}
+.pickrow .chip{min-height:44px}
+
+/* check-in after activity */
+.reply-card{background:var(--card);border-radius:20px;padding:14px 16px;font-size:14.5px;line-height:1.5;display:flex;gap:10px;animation:fadeUp .35s ease both}
+.reply-card .dot{margin-top:6px;width:12px;height:12px;box-shadow:0 0 0 4px rgba(123,97,255,.2)}
+
+/* next step */
+.nextcard{position:relative;border-radius:26px;padding:20px;display:flex;flex-direction:column;gap:10px;color:var(--ink);animation:fadeUp .45s ease both}
+.nextcard h2{font-size:22px;margin:0;font-weight:600;line-height:1.2}
+.nextcard p{font-size:14px}
+.nextcard .me{position:absolute;top:-22px;right:10px;width:72px}
+.nextcard h2{padding-right:70px}
+.opt-list{display:flex;flex-direction:column;gap:8px}
+.optl{display:flex;align-items:center;gap:12px;width:100%;min-height:62px;border-radius:18px;background:var(--card);padding:10px 14px;text-align:left;color:var(--ink);animation:fadeUp .4s ease both}
+.optl .sw{width:40px;height:40px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center}
+.optl .sw svg{width:22px;height:22px;fill:none;stroke:var(--indigo);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.optl b{display:block;font-size:14.5px;font-weight:600}
+.optl small{font-size:12px;color:var(--muted)}
+
+/* resources */
+.res{display:flex;flex-direction:column;gap:6px;background:var(--card);border-radius:20px;padding:14px 16px;text-align:left;color:var(--ink);animation:fadeUp .35s ease both;width:100%}
+.res .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.res b{font-size:15px;line-height:1.3}
+.res small{font-size:12px;color:var(--muted)}
+.fmt{font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:6px;flex:0 0 auto}
+
+/* buddy */
+.shuffle{position:relative;height:220px;display:grid;place-items:center}
+.shuffle .sc{position:absolute;width:150px;height:190px;border-radius:24px;background:var(--card);box-shadow:0 10px 24px rgba(42,26,110,.12);animation:shuf 1.2s ease-in-out infinite}
+.shuffle .sc:nth-child(1){animation-delay:0s;background:var(--pink)}.shuffle .sc:nth-child(2){animation-delay:.4s;background:var(--sky)}.shuffle .sc:nth-child(3){animation-delay:.8s;background:var(--yellow)}
+@keyframes shuf{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-70px) rotate(-10deg)}75%{transform:translateX(70px) rotate(10deg)}}
+.bud{background:var(--card);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:10px;animation:fadeUp .4s ease both}
+.bud .who{display:flex;gap:12px;align-items:center}
+.av{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:600;color:var(--ink);flex:0 0 auto}
+.bud b{font-size:17px}.bud small{font-size:12.5px;color:var(--muted)}
+.itag{font-size:12px;font-weight:500;background:var(--pink);border-radius:999px;padding:4px 10px}
+.itag.shared{background:var(--indigo);color:#fff}
+.plane{width:90px;height:90px;margin:10px auto;animation:fly 2.2s ease-in-out infinite}
+@keyframes fly{0%{transform:translate(-60px,20px) rotate(-8deg);opacity:0}30%{opacity:1}100%{transform:translate(70px,-50px) rotate(8deg);opacity:0}}
+.confetti i{position:absolute;width:9px;height:14px;border-radius:3px;top:-20px;animation:fall 2.4s ease-in forwards}
+@keyframes fall{to{transform:translateY(760px) rotate(540deg)}}
+
+/* workshop + calendar */
+.ws{background:var(--card);border-radius:22px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;text-align:left;color:var(--ink);width:100%;animation:fadeUp .35s ease both}
+.ws .date{width:52px;flex:0 0 auto;border-radius:14px;background:var(--yellow);text-align:center;padding:6px 0;font-weight:600;line-height:1.1}
+.ws .date b{display:block;font-size:20px}.ws .date small{font-size:11px;text-transform:uppercase}
+.ws strong{display:block;font-size:14.5px;line-height:1.3}
+.ws span{font-size:12.5px;color:var(--muted)}
+.ws .pick{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;background:var(--lilac);color:var(--indigo);padding:3px 8px;border-radius:6px}
+.calbox{position:relative;height:200px;display:grid;place-items:center}
+.cal{width:170px;border-radius:22px;background:var(--card);overflow:hidden;box-shadow:0 14px 30px rgba(42,26,110,.15);animation:calIn .7s cubic-bezier(.3,.9,.4,1) both}
+.cal .h{background:var(--indigo);color:#fff;font-size:12px;font-weight:600;padding:8px;text-align:center}
+.cal .g{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:10px}
+.cal .g i{aspect-ratio:1;border-radius:6px;background:var(--paper)}
+.cal .g i.hit{background:var(--yellow);animation:hit .6s ease .7s both}
+@keyframes calIn{from{opacity:0;transform:translateY(-60px) rotate(-4deg)}to{opacity:1;transform:none}}
+@keyframes hit{0%{transform:scale(1)}50%{transform:scale(1.6)}100%{transform:scale(1)}}
+.evchip{position:absolute;bottom:6px;left:0;right:0;margin:0 auto;width:max-content;background:var(--indigo);color:#fff;font-size:12px;font-weight:500;padding:8px 12px;border-radius:999px;white-space:nowrap;animation:fadeUp .4s ease 1.1s both}
+
+/* counsellor */
+.slotgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.slotgrid .chip{padding:0 6px;justify-content:center}
+.ticket{position:relative;background:var(--card);border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:6px;animation:ticket .7s cubic-bezier(.3,.9,.4,1) both}
+.ticket:before,.ticket:after{content:"";position:absolute;top:58%;width:22px;height:22px;border-radius:50%;background:var(--sky)}
+.ticket:before{left:-11px}.ticket:after{right:-11px}
+.ticket hr{border:0;border-top:2px dashed var(--grey);margin:8px 0}
+.ticket b{font-size:18px}
+@keyframes ticket{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:none}}
+.edit-note{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
+
+/* urgent */
+.urgent-list{display:flex;flex-direction:column;gap:6px;font-size:13.5px;line-height:1.45}
+.urgent-list li{margin-left:18px}
+.pill.call{background:var(--indigo)}
+.pill.white{background:#fff;color:var(--indigo)}
+
+/* follow-up */
+.lock{flex:1;display:flex;flex-direction:column;align-items:center;padding:56px 18px 24px;gap:6px;color:#fff;background:radial-gradient(120% 80% at 50% 0%,#3A2A8A 0%,#1D1638 70%)}
+.lock .clock{font-size:64px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.lock .day{font-size:14px;opacity:.85}
+.notif{margin-top:40px;width:100%;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:20px;padding:12px 14px;display:flex;gap:12px;align-items:center;text-align:left;color:#fff;animation:notif .6s cubic-bezier(.3,.9,.4,1) .6s both}
+.notif .ap{width:38px;height:38px;border-radius:10px;background:var(--violet);display:grid;place-items:center;flex:0 0 auto}
+.notif .ap i{width:12px;height:12px;border-radius:50%;background:#fff}
+.notif b{font-size:13px;display:block}.notif span{font-size:13px;opacity:.9}
+@keyframes notif{from{opacity:0;transform:translateY(-30px) scale(.96)}to{opacity:1;transform:none}}
+.lock .hint{color:#fff;opacity:.75;margin-top:auto}
+.path{position:relative;display:flex;flex-direction:column;gap:14px;padding-left:28px}
+.path:before{content:"";position:absolute;left:10px;top:8px;bottom:8px;width:3px;border-radius:3px;background:rgba(42,26,110,.18)}
+.wk{position:relative;background:var(--card);border-radius:18px;padding:12px 14px;animation:fadeUp .4s ease both}
+.wk:before{content:"";position:absolute;left:-24px;top:16px;width:14px;height:14px;border-radius:50%;background:var(--paper);box-shadow:inset 0 0 0 3px var(--indigo)}
+.wk.done:before{background:var(--indigo)}
+.wk.now:before{background:var(--violet);box-shadow:0 0 0 5px rgba(123,97,255,.25);animation:pulse 2.4s ease-in-out infinite}
+.wk small{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--indigo)}
+.wk p{font-size:14px}
+.kit{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x mandatory}
+.kit>*{scroll-snap-align:start;flex:0 0 140px}
+.kitem{border-radius:20px;padding:10px;display:flex;flex-direction:column;gap:6px;text-align:left;color:var(--ink);min-height:150px}
+.kitem .mini{border-radius:14px;overflow:hidden;aspect-ratio:300/246;background:rgba(255,255,255,.55)}
+.kitem .mini svg{width:100%;height:100%}
+.kitem b{font-size:13px;line-height:1.25}
+.kitem.card q{font-size:13px;font-weight:600;line-height:1.35;quotes:none}
+
+/* end */
+.endwrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:24px;position:relative;overflow:hidden}
+.endwrap .row6{display:flex;gap:4px;align-items:flex-end;justify-content:center;width:100%}
+.endwrap .row6>div{width:15%;animation:rise 1s cubic-bezier(.2,.8,.3,1) both}
+
+/* v2.1: UX pass */
+.exit{height:44px}
+.chip{min-height:44px}
+.link{min-height:44px}
+.phone[data-bg="peach"]{background:#FFC79A}
+.phone[data-bg="mist"]{background:#A9BDD6}
+.phone[data-bg="white"]{background:#FFFFFF}
+.phone[data-bg="peach"] .sub,.phone[data-bg="mist"] .sub{color:var(--muted-on)}
+.phone[data-bg="white"] .qopt,.phone[data-bg="white"] .step,.phone[data-bg="white"] .plan,.phone[data-bg="white"] .field{background:var(--paper)}
+.phone[data-bg="white"] .qopt.on,.phone[data-bg="white"] .step.on{background:var(--indigo)}
+.phone[data-bg="white"] .pic.big,.phone[data-bg="white"] .evid{background:var(--paper)!important}
+.lcard[style*="var(--card)"]{box-shadow:inset 0 0 0 2px var(--lilac)}
+details.evid summary{cursor:pointer;list-style:none;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--indigo);display:flex;justify-content:space-between;align-items:center;min-height:28px}
+details.evid summary::-webkit-details-marker{display:none}
+details.evid summary:after{content:"+";font-size:18px;font-weight:500}
+details.evid[open] summary:after{content:"\2212"}
+details.evid[open] summary{margin-bottom:4px}
+.phone[data-bg="white"] .meta span{background:var(--paper)}
+.phone[data-bg="white"] .stepdots i:not(.on):not(.done){background:rgba(42,26,110,.18)}
+
+/* v2.2: decision tree */
+.phone[data-bg="stage"]{background:#E9E4F7}
+.phone[data-bg="stage"] .sub{color:var(--muted-on)}
+.tdot{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:14px;flex:0 0 auto}
+.tpanel{gap:6px}.tpanel h2{font-size:16px}
+.tpanel .field{min-height:44px;padding:10px 12px;font-size:14px;background:var(--paper);border-width:1.5px}
+.tpanel .qopt{background:var(--paper)}.tpanel .qopt.on{background:var(--indigo)}
+.troot{background:var(--indigo);color:#fff;border-radius:18px;padding:12px 14px;font-size:14px;font-weight:600;line-height:1.4;text-align:center;animation:fadeUp .4s ease both}
+.tsvg{width:100%;height:44px;display:block;margin:-16px 0 -16px;overflow:visible}
+.tbranch{fill:none;stroke:var(--indigo);stroke-width:3;stroke-linecap:round;stroke-dasharray:120;stroke-dashoffset:120;animation:tgrow .7s ease forwards;vector-effect:non-scaling-stroke}
+@keyframes tgrow{to{stroke-dashoffset:0}}
+.tcols{display:grid;gap:8px;align-items:start}
+.tcol{display:flex;flex-direction:column;gap:6px;animation:fadeUp .45s ease both}
+.tnode{border-radius:14px;padding:10px 8px;font-size:13px;font-weight:600;text-align:center;line-height:1.3;color:var(--ink)}
+.tleaf{background:var(--card);border-radius:12px;padding:8px;font-size:12px;line-height:1.35;color:var(--ink)}
+.tleaf small{display:block;font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--indigo);margin-bottom:2px}
+.tleaf.nx{box-shadow:inset 0 0 0 2px var(--indigo)}
+
+/* v2.3: bottom navigation */
+.tabbar{flex:0 0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px 14px 14px;background:var(--card);box-shadow:0 -1px 0 rgba(42,26,110,.08);position:relative;z-index:2}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;font-size:12px;font-weight:500;color:var(--muted);border-radius:16px;transition:color .2s}
+.tab .ti{width:56px;height:32px;border-radius:999px;display:grid;place-items:center;transition:background .25s ease,transform .25s cubic-bezier(.3,.9,.4,1)}
+.tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--indigo);font-weight:600}
+.tab.on .ti{background:var(--c);animation:tabpop .35s cubic-bezier(.3,.9,.4,1)}
+.tab:active .ti{transform:scale(.92)}
+@keyframes tabpop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.phone.has-tabs .toast{bottom:92px}
+.phone.has-tabs .strip{margin-bottom:0}
+
+/* 8 composer + resources (scaffold additions) */
+.composer{display:flex;gap:8px;align-items:flex-end}
+.composer textarea{flex:1;min-height:48px;max-height:120px;resize:none;border-radius:20px;border:2px solid var(--indigo);background:var(--card);padding:12px 14px;font:inherit;font-size:14px;color:var(--ink)}
+.composer .send{flex:0 0 auto;width:48px;height:48px;border-radius:50%;background:var(--indigo);color:var(--white);font-size:20px}
+.rescard{display:block;width:100%;background:var(--card);border-radius:18px;padding:12px 14px;margin-top:8px;text-align:left;color:var(--ink);text-decoration:none;box-shadow:inset 0 0 0 2px var(--lilac)}
+.rescard b{display:block;font-size:14.5px}
+.rescard>span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.reslist{display:flex;flex-direction:column}
+
+/* 9 guided pathways */
+.wta{width:100%;border-radius:14px;border:2px solid var(--indigo);background:var(--card);padding:10px;font:inherit;font-size:14px;color:var(--ink);resize:vertical}
+.priv{font-size:12px;color:var(--muted);margin:8px 0}
+.wcols{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.wcols label{font-size:12px;font-weight:600;display:block}
+.released{font-style:italic;color:var(--muted)}
+#wbox .bubble{flex:1;min-width:0}
+#wbox .pill{width:100%}
+#wbox .link{display:block;margin:8px auto 0}
+
+/* 10 handoff, contact, trust */
+.hol{display:block;margin-top:10px;font-weight:600;font-size:13px}
+.hol .else,.hol select{display:block;width:100%;margin-top:4px}
+
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="rough" x="-12%" y="-12%" width="124%" height="124%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G" result="d"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="9" result="g"/>
+    <feColorMatrix in="g" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -1.1 0 0 0 0.62" result="ga"/>
+    <feComposite in="ga" in2="d" operator="in" result="gi"/>
+    <feMerge><feMergeNode in="d"/><feMergeNode in="gi"/></feMerge>
+  </filter>
+</svg>
+
+<div class="phone" id="phone" data-bg="violet"></div>
+<p class="proto-note">Prototype v2: the full journey. Scripted replies are samples. Wording not yet reviewed by a counsellor.</p>
+
+<script src="scoring.js"></script>
+<script>
+(function(){
+var phone = document.getElementById('phone');
+
+/* ---------- characters (original designs, unchanged from Campus Guide.html) ---------- */
+var INK = '#1D1638';
+
+/* ---------- characters (original designs) ---------- */
+function eye(x,y,r,px,py){ return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#fff"/><circle cx="'+(x+(px||0))+'" cy="'+(y+(py||0))+'" r="'+(r*0.42)+'" fill="'+INK+'"/>'; }
+function limb(x1,y1,x2,y2){ return '<path d="M'+x1+' '+y1+'L'+x2+' '+y2+'" stroke-width="7" stroke-linecap="round" fill="none"/>'; }
+function star(cx,cy,n,r1,r2){
+  var p=[],i; for(i=0;i<n*2;i++){ var a=Math.PI*i/n - Math.PI/2, r=i%2?r2:r1; p.push([cx+r*Math.cos(a), cy+r*Math.sin(a)]); }
+  function mid(a,b){ return [(a[0]+b[0])/2,(a[1]+b[1])/2]; }
+  var m=mid(p[p.length-1],p[0]), d='M'+m[0].toFixed(1)+' '+m[1].toFixed(1);
+  for(i=0;i<p.length;i++){ var nx=p[(i+1)%p.length], mm=mid(p[i],nx); d+='Q'+p[i][0].toFixed(1)+' '+p[i][1].toFixed(1)+' '+mm[0].toFixed(1)+' '+mm[1].toFixed(1); }
+  return d+'Z';
+}
+var CH = {
+  sunny:{label:'Okay, steady', col:'#F5B32E',
+    body:'<path d="M100 30C150 28 182 70 178 120C175 168 140 192 98 190C55 189 22 160 24 112C26 66 55 32 100 30Z"/>'+limb(82,186,82,208)+limb(116,186,116,208)+limb(30,112,14,98)+limb(174,114,190,102),
+    face:'<g class="eyes">'+eye(86,78,7,1,0)+eye(112,78,7,1,0)+'</g><path d="M90 96Q99 104 108 96" stroke="'+INK+'" stroke-width="2.6" fill="none" stroke-linecap="round"/>'},
+  foggy:{label:'Flat, low', col:'#A9BDD6',
+    body:'<path d="M50 152C18 152 12 110 42 100C36 64 78 46 96 70C110 38 162 50 156 92C190 96 192 150 156 154Z"/>'+limb(80,150,80,174)+limb(120,152,120,174),
+    face:'<g class="eyes">'+eye(88,100,7,0,2)+eye(112,100,7,0,2)+'</g><path d="M80 93h16M104 93h16" stroke="#A9BDD6" stroke-width="9"/><path d="M92 118h16" stroke="'+INK+'" stroke-width="2.6" stroke-linecap="round"/>'},
+  buzzy:{label:'Anxious, on edge', col:'#F0562B',
+    body:'<path d="'+star(100,106,9,84,62)+'"/>'+limb(88,176,86,204)+limb(112,176,114,204),
+    face:'<g class="eyes">'+eye(86,92,9,0,0)+eye(114,92,9,0,0)+'</g><path d="M88 114q4 -5 8 0q4 5 8 0q4 -5 8 0" stroke="'+INK+'" stroke-width="2.6" fill="none" stroke-linecap="round"/>'},
+  heavy:{label:'Sad, weighed down', col:'#3D55C4',
+    body:'<g transform="rotate(4 100 120)"><path d="M96 50C128 48 140 80 146 112C156 160 150 198 100 198C48 198 40 160 52 114C60 80 68 52 96 50Z"/>'+limb(58,120,48,178)+limb(144,122,154,178)+limb(86,194,86,212)+limb(112,194,112,212)+'</g>',
+    face:'<g class="eyes">'+eye(90,84,7,0,3)+eye(114,86,7,0,3)+'</g><path d="M94 106Q102 99 110 106" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/>'},
+  knotted:{label:'Overwhelmed', col:'#EC2F7B',
+    body:'<path d="M60 72C90 56 140 60 156 86C172 122 166 178 128 190C90 200 44 188 38 146C34 112 40 84 60 72Z"/>'+limb(44,132,28,152)+limb(160,130,176,148)+limb(86,190,86,210)+limb(116,190,116,210),
+    face:'<path d="M84 48c-14 -18 20 -28 22 -8c2 18 -28 14 -18 -6c10 -18 38 -4 26 12c-10 12 -30 0 -18 -10" stroke="'+INK+'" stroke-width="3" fill="none" stroke-linecap="round"/><g class="eyes">'+eye(86,100,7,-2,-1)+eye(112,100,7,2,1)+'</g><path d="M88 122l5 -5l5 5l5 -5l5 5" stroke="'+INK+'" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'},
+  sleepy:{label:'Tired, running low', col:'#A6CE39',
+    body:'<path d="M100 62C150 60 178 102 172 142C166 182 130 196 96 194C56 192 26 170 30 134C34 94 60 64 100 62Z"/>'+limb(84,190,84,210)+limb(112,190,112,210),
+    face:'<path d="M78 108q7 6 14 0M104 108q7 6 14 0" stroke="'+INK+'" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="98" cy="126" r="3.4" fill="'+INK+'"/><text class="z" x="140" y="62" font-size="20" font-weight="700" fill="'+INK+'" font-family="Poppins,sans-serif">z</text><text class="z z2" x="156" y="42" font-size="14" font-weight="700" fill="'+INK+'" font-family="Poppins,sans-serif">z</text>'}
+};
+var ORDER = ['sunny','foggy','buzzy','heavy','knotted','sleepy'];
+function chr(key, idle){
+  if(key==='notsure') return '<svg class="ch" viewBox="0 0 200 220" aria-hidden="true"><path class="outline" d="M100 40C150 38 176 80 172 124C168 170 136 192 98 190C58 189 28 164 30 120C32 76 56 42 100 40Z" fill="none" stroke="'+INK+'" stroke-width="4" stroke-dasharray="10 18" stroke-linecap="round"/></svg>';
+  var c=CH[key];
+  return '<svg class="ch '+(idle===false?'':'idle-'+key)+'" viewBox="0 0 200 220" aria-hidden="true"><g filter="url(#rough)" fill="'+c.col+'" stroke="'+c.col+'">'+c.body+'</g>'+c.face+'</svg>';
+}
+
+/* ---------- plate items (unchanged) ---------- */
+var P = {
+  exams:['Exams','<path d="M7 3h8l3 3v15H7zM10 10h6M10 14h6"/>','#FFE27A'],
+  sleep:['Sleep','<path d="M17 14a7 7 0 1 1-7-9a6 6 0 0 0 7 9z"/>','#BFE3F5'],
+  family:['Family','<path d="M4 11l8-7l8 7v9H4zM10 20v-5h4v5"/>','#F7C3D6'],
+  friends:['Friends','<circle cx="8" cy="10" r="3"/><circle cx="16" cy="10" r="3"/><path d="M3 19c1-4 9-4 10 0M11 19c1-4 9-4 10 0"/>','#C6E58A'],
+  alone:['Feeling alone','<circle cx="12" cy="9" r="3"/><path d="M6 20c1-6 11-6 12 0"/>','#A9BDD6'],
+  money:['Money','<circle cx="12" cy="12" r="8"/><path d="M9 9h6M9 12h6M9 9c5 0 5 6 0 6l5 4"/>','#FFC79A'],
+  loss:['A loss','<path d="M12 20s-7-4.4-7-9.5A4 4 0 0 1 12 8a4 4 0 0 1 7 2.5C19 15.6 12 20 12 20z"/><path d="M12 8l-1.5 3.5L13 13l-1.5 3.5"/>','#DCD0F8'],
+  work:['Work','<rect x="4" y="8" width="16" height="11" rx="2"/><path d="M9 8V5h6v3"/>','#F7C3D6'],
+  other:['Something else','<circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/>','#FFE27A']
+};
+var PKEYS = Object.keys(P);
+var SLOTS = [[50,50],[30,34],[70,34],[28,66],[72,66],[50,24],[50,77],[14,50],[86,50]];
+function icon(k){ return '<svg viewBox="0 0 24 24" aria-hidden="true">'+P[k][1]+'</svg>'; }
+
+/* ---------- illustration keyframes (v2) ---------- */
+document.head.insertAdjacentHTML('beforeend','<style>'+
+'.ia{transform-box:fill-box;transform-origin:center}'+
+'@keyframes ibr{0%{transform:scale(.72)}33%{transform:scale(1)}50%{transform:scale(1)}100%{transform:scale(.72)}}'+
+'@keyframes isq{0%,100%{transform:scale(1,1)}35%,60%{transform:scale(1.2,.76)}}'+
+'@keyframes irip{from{transform:scale(.3);opacity:.9}to{transform:scale(1.25);opacity:0}}'+
+'@keyframes icar{0%{transform:translate(0,-120px)}45%,85%{transform:translate(0,0)}100%{transform:translate(0,0);opacity:0}}'+
+'@keyframes ipop{0%,30%,100%{transform:scale(1)}12%{transform:scale(1.14)}}'+
+'@keyframes ifloat{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-8px) rotate(-3deg)}}'+
+'@keyframes itw{0%,100%{transform:scale(.6) rotate(0);opacity:.4}50%{transform:scale(1.15) rotate(30deg);opacity:1}}'+
+'@keyframes iin{0%,8%{opacity:0;transform:translateY(16px)}22%,88%{opacity:1;transform:none}100%{opacity:0}}'+
+'@keyframes igrow{0%,5%{transform:scaleY(0)}20%,90%{transform:scaleY(1)}100%{transform:scaleY(0)}}'+
+'@keyframes ihop{0%,20%{transform:translate(0,0)}35%{transform:translate(52px,-28px)}50%{transform:translate(104px,-56px)}65%,90%{transform:translate(156px,-84px)}100%{transform:translate(0,0)}}'+
+'</style>');
+var ILL = {
+  breathe:'<svg viewBox="0 0 300 246"><circle class="ia" style="animation:ibr 10s ease-in-out infinite" cx="150" cy="123" r="96" fill="#fff" opacity=".35"/><circle class="ia" style="animation:ibr 10s ease-in-out .15s infinite" cx="150" cy="123" r="66" fill="#fff" opacity=".6"/><circle class="ia" style="animation:ibr 10s ease-in-out .3s infinite" cx="150" cy="123" r="34" fill="#7B61FF"/></svg>',
+  pmr:'<svg viewBox="0 0 300 246"><ellipse cx="150" cy="206" rx="70" ry="9" fill="#2A1A6E" opacity=".12"/><g class="ia" style="animation:isq 3.6s ease-in-out infinite;transform-origin:center bottom"><circle cx="150" cy="140" r="66" fill="#F7C3D6"/><path d="M112 118q14-18 34-20" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" opacity=".8"/></g><path d="M62 140h18M220 140h18M70 104l14 10M230 104l-14 10" stroke="#2A1A6E" stroke-width="6" stroke-linecap="round" opacity=".5"/></svg>',
+  ground:'<svg viewBox="0 0 300 246"><circle class="ia" style="animation:irip 3.6s ease-out infinite" cx="150" cy="200" r="110" fill="none" stroke="#2A1A6E" stroke-width="4" opacity=".4"/><circle class="ia" style="animation:irip 3.6s ease-out 1.2s infinite" cx="150" cy="200" r="110" fill="none" stroke="#2A1A6E" stroke-width="4" opacity=".4"/><circle class="ia" style="animation:irip 3.6s ease-out 2.4s infinite" cx="150" cy="200" r="110" fill="none" stroke="#2A1A6E" stroke-width="4" opacity=".4"/><rect x="40" y="198" width="220" height="10" rx="5" fill="#2A1A6E" opacity=".25"/><rect x="112" y="96" width="34" height="100" rx="17" fill="#2A1A6E"/><rect x="156" y="96" width="34" height="100" rx="17" fill="#2A1A6E"/></svg>',
+  park:'<svg viewBox="0 0 300 246"><rect x="30" y="30" width="240" height="190" rx="22" fill="#3B3360"/><path d="M110 40v150M190 40v150" stroke="#fff" stroke-width="4" stroke-dasharray="10 10" opacity=".45"/><rect x="48" y="138" width="46" height="28" rx="9" fill="#FFE27A"/><rect x="206" y="104" width="46" height="28" rx="9" fill="#BFE3F5"/><g class="ia" style="animation:icar 4s cubic-bezier(.3,.8,.3,1) infinite"><rect x="127" y="128" width="46" height="28" rx="9" fill="#F7C3D6"/></g><rect x="30" y="192" width="240" height="28" rx="0" fill="#000" opacity=".15"/></svg>',
+  menu:'<svg viewBox="0 0 300 246"><g class="ia" style="animation:ipop 2.6s ease infinite"><rect x="58" y="34" width="84" height="84" rx="22" fill="#F7C3D6"/><path d="M90 90V58l22-6v32" stroke="#2A1A6E" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="86" cy="92" r="7" fill="#2A1A6E"/><circle cx="108" cy="86" r="7" fill="#2A1A6E"/></g><g class="ia" style="animation:ipop 2.6s ease .65s infinite"><rect x="158" y="34" width="84" height="84" rx="22" fill="#BFE3F5"/><path d="M180 78l14 14l26-30" stroke="#2A1A6E" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g><g class="ia" style="animation:ipop 2.6s ease 1.95s infinite"><rect x="58" y="130" width="84" height="84" rx="22" fill="#C6E58A"/><path d="M76 162h48v28H96l-12 10v-10h-8z" fill="#fff"/></g><g class="ia" style="animation:ipop 2.6s ease 1.3s infinite"><rect x="158" y="130" width="84" height="84" rx="22" fill="#fff"/><path d="M180 196c0-30 18-46 44-46c0 28-18 46-44 46zM180 196l22-22" stroke="#2A1A6E" stroke-width="6" fill="none" stroke-linecap="round"/></g></svg>',
+  cope:'<svg viewBox="0 0 300 246"><g class="ia" style="animation:ifloat 4s ease-in-out infinite"><rect x="64" y="56" width="172" height="124" rx="20" fill="#fff"/><rect x="86" y="84" width="110" height="12" rx="6" fill="#2A1A6E"/><rect x="86" y="106" width="128" height="10" rx="5" fill="#DCD0F8"/><rect x="86" y="124" width="94" height="10" rx="5" fill="#DCD0F8"/></g><path class="ia" style="animation:itw 2.2s ease-in-out infinite" d="M232 46l6 14l14 6l-14 6l-6 14l-6-14l-14-6l14-6z" fill="#7B61FF"/><path class="ia" style="animation:itw 2.2s ease-in-out .8s infinite" d="M70 176l4 9l9 4l-9 4l-4 9l-4-9l-9-4l9-4z" fill="#7B61FF"/></svg>',
+  sfn:'<svg viewBox="0 0 300 246"><g class="ia" style="animation:iin 5s ease infinite"><rect x="48" y="30" width="204" height="52" rx="16" fill="#fff"/><rect x="66" y="50" width="120" height="12" rx="6" fill="#2A1A6E"/></g><g class="ia" style="animation:iin 5s ease .5s infinite"><rect x="48" y="96" width="204" height="52" rx="16" fill="#F7C3D6"/><circle cx="76" cy="122" r="10" fill="#2A1A6E"/><rect x="96" y="116" width="90" height="12" rx="6" fill="#2A1A6E" opacity=".6"/></g><g class="ia" style="animation:iin 5s ease 1s infinite"><rect x="48" y="162" width="204" height="52" rx="16" fill="#FFE27A"/><rect x="66" y="182" width="150" height="12" rx="6" fill="#2A1A6E" opacity=".7"/></g></svg>',
+  tree:'<svg viewBox="0 0 300 246"><style>.tl{stroke:#2A1A6E;stroke-width:6;fill:none;stroke-linecap:round;stroke-dasharray:140;animation:tdraw 4.4s ease infinite}@keyframes tdraw{0%,8%{stroke-dashoffset:140}35%,88%{stroke-dashoffset:0}100%{stroke-dashoffset:140}}.tn{transform-box:fill-box;transform-origin:center;animation:tpop 4.4s ease infinite}@keyframes tpop{0%,30%{transform:scale(0)}42%,88%{transform:scale(1)}100%{transform:scale(0)}}</style><path class="tl" d="M150 64V100M150 100Q150 118 82 132M150 100Q150 118 218 132"/><path class="tl" style="animation-delay:.4s" d="M82 156V186M218 156V186"/><rect x="104" y="30" width="92" height="38" rx="14" fill="#2A1A6E"/><rect x="122" y="45" width="56" height="8" rx="4" fill="#fff" opacity=".8"/><g class="tn" style="animation-delay:.2s"><rect x="40" y="128" width="84" height="32" rx="12" fill="#fff"/><rect x="56" y="140" width="52" height="8" rx="4" fill="#7B61FF"/></g><g class="tn" style="animation-delay:.35s"><rect x="176" y="128" width="84" height="32" rx="12" fill="#fff"/><rect x="192" y="140" width="52" height="8" rx="4" fill="#7B61FF"/></g><g class="tn" style="animation-delay:.6s"><circle cx="82" cy="196" r="12" fill="#FFE27A"/><circle cx="218" cy="196" r="12" fill="#FFE27A"/></g></svg>',
+  steps:'<svg viewBox="0 0 300 246"><rect x="44" y="206" width="212" height="8" rx="4" fill="#2A1A6E" opacity=".2"/><rect class="ia" style="animation:igrow 4.4s ease infinite;transform-origin:center bottom" x="52" y="178" width="46" height="28" rx="8" fill="#2A1A6E"/><rect class="ia" style="animation:igrow 4.4s ease .2s infinite;transform-origin:center bottom" x="104" y="150" width="46" height="56" rx="8" fill="#2A1A6E"/><rect class="ia" style="animation:igrow 4.4s ease .4s infinite;transform-origin:center bottom" x="156" y="122" width="46" height="84" rx="8" fill="#2A1A6E"/><rect class="ia" style="animation:igrow 4.4s ease .6s infinite;transform-origin:center bottom" x="208" y="94" width="46" height="112" rx="8" fill="#2A1A6E"/><g style="animation:ihop 4.4s ease-in-out infinite"><circle cx="75" cy="160" r="20" fill="#7B61FF" opacity=".25"/><circle cx="75" cy="160" r="11" fill="#7B61FF"/></g></svg>'
+};
+
+/* ---------- the 8 activities (chosen from the IMP doc by strength of evidence) ---------- */
+var ACTS = [
+ {id:'breathe', name:'Breathe for two minutes', tag:'Calm your body', mins:'2 min', bg:'sky', col:'var(--sky)', for:'Stress, anxiety, poor sleep',
+  why:'Slowing your breathing down can settle your body when stress builds up.',
+  ev:'Breathwork lowered stress, anxiety and low mood in a 2023 meta-analysis of randomised trials (Fincham et al., Scientific Reports). Based on NHS belly-breathing guidance.'},
+ {id:'pmr', name:'Tense and release', tag:'Calm your body', mins:'3 min', bg:'pink', col:'var(--pink)', for:'Tension, restlessness, sleep',
+  why:'Gently tense one part of your body for 4 seconds, then let go for 6. Five parts in all. Never tense anything that hurts, and skip any part you like.',
+  ev:'Relaxation training, including progressive muscle relaxation, had medium-to-large effects on anxiety across 27 studies (Manzoni et al., 2008, BMC Psychiatry).'},
+ {id:'ground', name:'Come back to now', tag:'Steady yourself', mins:'3 min', bg:'lime', col:'#C6E58A', for:'Anxiety, racing thoughts',
+  why:'When worry pulls you into what might happen, noticing your feet, what you see, feel and hear brings you back to the present.',
+  ev:'Adapted from WHO’s Doing What Matters in Times of Stress, which has worked in several randomised trials.'},
+ {id:'park', name:'Worry parking lot', tag:'Sort your worries', mins:'4 min', bg:'lilac', col:'var(--lilac)', for:'Overthinking, exam and placement worry',
+  why:'Park each worry: act on it now, later, or let it wait. Then pick one thing to do in the next 10 minutes.',
+  ev:'Postponing worry to a set time reduced daily worry across 7 randomised trials with 999 people (Dippel et al., 2024).'},
+ {id:'menu', name:'Activity menu', tag:'Lift your mood', mins:'2–15 min', bg:'yellow', col:'var(--yellow)', for:'Low mood, low energy',
+  why:'When everything feels like too much, pick one small thing to do. Not to feel happy, just to take one step.',
+  ev:'Behavioural activation (planning small, doable activities) is an effective treatment for low mood across 26 trials (Ekers et al., 2014, PLOS ONE).'},
+ {id:'cope', name:'Make a coping card', tag:'Be kinder to yourself', mins:'3 min', bg:'peach', col:'#FFC79A', for:'Self-criticism, comparison, hard days',
+  why:'Write the words you’d give a friend, so they’re ready when you need them yourself.',
+  ev:'Self-compassion exercises improved stress, anxiety and low mood across 27 trials (Ferrari et al., 2019, Mindfulness).'},
+ {id:'sfn', name:'What happened, what I need', tag:'Sort out a feeling', mins:'5 min', bg:'mist', col:'#A9BDD6', for:'Friendships, family, relationships',
+  why:'Write down what happened, how you felt and what you need before deciding whether to do anything about it.',
+  ev:'Writing about feelings has small but consistent benefits for stress and mood (Frattaroli, 2006; Guo, 2023).'},
+ {id:'steps', name:'Break it down', tag:'Get unstuck', mins:'5 min', bg:'white', col:'var(--card)', for:'Exams, deadlines, too much to do',
+  why:'Turn one big task into small steps, and decide exactly when and where you’ll start the first one.',
+  ev:'Structured problem-solving, as in WHO’s Problem Management Plus, had a large effect compared with no help (Cuijpers et al., 2018).'},
+ {id:'tree', name:'The decision tree', tag:'Think a choice through', mins:'5 min', bg:'stage', col:'#E9E4F7', for:'Placements, choosing courses, deadlines, hard conversations',
+  why:'Lay out your options side by side: what you know, what you still need to find out, and one small step for each. The tree won’t tell you what to choose.',
+  ev:'Problem-solving works best when it includes listing alternatives and weighing them up, not just tips (Bell & D’Zurilla, 2009, meta-analysis).'}
+];
+function A(id){ for(var i=0;i<ACTS.length;i++) if(ACTS[i].id===id) return ACTS[i]; }
+
+/* ---------- sample data from the IMP doc (all fictional) ---------- */
+var VOL = [
+ ['Lavanya','Psychology and HR',['Writing','Poetry','Film','Basketball']],
+ ['Inesha','Design and LCS',['Art','Swimming','Pottery','Crafts','Anime']],
+ ['Khyati','Economics and Data Analytics',['Music','Math','Cricket','Dance']],
+ ['Ichcha','Marketing and FLTV',['Community service','Writing','Film','Boxing']],
+ ['Suhaani','Marketing and FLTV',['Reels','Cooking','Dance']],
+ ['Dhoj','Data Science and Economics',['Fashion','MUN','Motorsports','Film']],
+ ['Zuha','Finance and Digital Marketing',['Theatre','Community service','Singing','Football']],
+ ['Manav','Data Science and Economics',['Coding','Sports','Anime','Squash']],
+ ['Anish','Sociology and LCS',['Writing','Swimming','Film']],
+ ['Ananya','Psychology and Sociology',['Public speaking','MUN','Fashion','Art']]
+];
+var INTERESTS = ['Art','Film','Writing','Music','Dance','Anime','Sports','Cooking','Theatre','Coding','Fashion','Swimming'];
+var WS = [
+ {id:'exam', who:'Dr. Ayesha Mehta', spec:'Academic stress and anxiety', title:'Managing Examination Stress: Practical Strategies for Academic Pressure', d:'24', m:'Nov', day:'Tue', time:'3:00–4:00 PM', match:['exams']},
+ {id:'home', who:'Dr. Medha Kulkarni', spec:'Adjustment and student well-being', title:'Finding Your Place: Managing Homesickness and Adjusting to University Life', d:'26', m:'Nov', day:'Thu', time:'4:00–5:00 PM', match:['alone','family']},
+ {id:'sleep', who:'Dr. Vaishnavi Vasekar', spec:'Sleep and emotional well-being', title:'Understanding Sleep: Building Healthier Routines and Managing Restlessness', d:'28', m:'Nov', day:'Sat', time:'2:00–3:00 PM', match:['sleep']},
+ {id:'friends', who:'Dr. Kanchan Shelke', spec:'Relationships and social well-being', title:'Navigating Friendships: Managing Peer Conflicts and Building Healthy Relationships', d:'30', m:'Nov', day:'Mon', time:'3:00–4:00 PM', match:['friends']},
+ {id:'daily', who:'Dr. Smita Joshi', spec:'Stress management and work-life balance', title:'Beyond the To-Do List: Managing Daily Stress and Personal Responsibilities', d:'2', m:'Dec', day:'Wed', time:'4:00–5:00 PM', match:['work','money','other']}
+];
+var DAYN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'], MONN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function dateIn(off){ var d=new Date(); d.setDate(d.getDate()+off); return {d:String(d.getDate()), m:MONN[d.getMonth()].slice(0,3), mf:MONN[d.getMonth()], y:d.getFullYear(), day:DAYN[d.getDay()].slice(0,3), dayf:DAYN[d.getDay()]}; }
+[1,3,5,7,9].forEach(function(o,i){ var x=dateIn(o); WS[i].d=x.d; WS[i].m=x.m; WS[i].mf=x.mf; WS[i].y=x.y; WS[i].day=x.day; }); // sample sessions always lie ahead
+var COUNS_DAYS=[1,2,3,4].map(function(o){ var x=dateIn(o); return x.day+' '+x.d+' '+x.m; });
+var SRES=[]; // approved resource list from the server (resources.json)
+var RES = [
+ ['WHO – Doing What Matters in Times of Stress','Illustrated guide with audio exercises: grounding, unhooking, making room.','Guide','Stress, anxiety','132 pages · audio'],
+ ['NHS – Self-help CBT techniques','Tackling to-do lists, solving problems, reframing unhelpful thoughts.','Read','Academic pressure','10 min'],
+ ['CCI – Put Off Procrastinating','Workbook on why we put things off, with an action plan.','Workbook','Procrastination','Modules'],
+ ['CCI – Worry and Rumination','Postponing worry, problem-solving and accepting uncertainty.','Workbook','Overthinking','Modules'],
+ ['NHS – Feeling lonely','Ideas for reconnecting, joining activities and asking for support.','Read','Loneliness','6 min'],
+ ['CCI – Assert Yourself!','Ten modules on saying what you need, boundaries and saying no.','Workbook','Friendships, family','Modules'],
+ ['CCI – Building Self-Compassion','Kinder ways of thinking, including compassionate letter writing.','Workbook','Self-criticism','Modules'],
+ ['CDC – About Sleep','How much sleep you need and habits that help.','Read','Sleep','5 min'],
+ ['University of Staffordshire – Student self-help videos','Short videos on homesickness, stress, procrastination and more.','Watch','Many topics','3–8 min each'],
+ ['NHS – Mindful breathing','A short guided video to bring attention to the present.','Watch','Stress','5 min'],
+ ['Manodarpan – Ministry of Education','Programmes on wellbeing, adjustment and seeking support.','Watch','Indian students','Episodes'],
+ ['Tele-MANAS – 14416','Government of India mental health helpline, free, 24/7.','Helpline','Anyone','Call']
+];
+var FMT = {Guide:'var(--lilac)',Read:'var(--sky)',Workbook:'var(--yellow)',Watch:'var(--pink)',Helpline:'#C6E58A'};
+
+/* 7 structured questions (IMP doc, section e) */
+var Q7 = [
+ {q:'How intense would you say this has been for you?', why:'Think about how strongly you’ve felt it recently.', o:['Very mild','Mild','Moderate','Severe','Very severe']},
+ {q:'How often have you been feeling this way?', why:'There are no right or wrong answers.', o:['Rarely','A few times a month','A few times a week','Almost every day','Several times a day','Constantly or nearly constantly']},
+ {q:'How long has this been going on?', why:'This helps suggest the right kind of support.', o:['Less than a week','1–4 weeks','1–3 months','3–6 months','More than 6 months','I’m not sure']},
+ {q:'How much has it affected your everyday life?', why:'For example your studies, sleep, relationships, concentration or routine.', o:['Not at all','Slightly','Moderately','Significantly','Severely']},
+ {q:'How hard has it been to manage or cope with?', why:'Being honest here helps us point you to the right support.', o:['Not difficult at all','Slightly difficult','Moderately difficult','Very difficult','Extremely difficult – I feel unable to manage it on my own']},
+ {q:'How has it changed over time?', why:'Only if you know. “I’m not sure” is fine.', o:['It has become less intense','It has stayed about the same','It has become more intense','It comes and goes','I’m not sure']},
+ {q:'A question about your safety', why:'We ask everyone this. If the answer is yes or you’re not sure, we’ll help you reach a person straight away.', sub:'Have you recently had thoughts of hurting yourself, ending your life, or hurting someone else?', o:['No','Yes','I’m not sure','Prefer not to answer'], safety:true}
+];
+var PREFS = [
+ {q:'What would you most like help with right now?', o:['Understanding what I’m experiencing','Learning ways to cope with my feelings','Managing stress or anxiety','Developing healthier habits','Talking through my concerns','Finding professional support','I’m not sure yet']},
+ {q:'What kind of support would you feel most comfortable with?', o:['Self-guided exercises and resources','An AI-supported conversation','Speaking to a human counsellor','A mix of AI and human support','I’m not sure']},
+ {q:'Is there anything that might make you hesitant to use an AI-based platform?', o:['Privacy and confidentiality','Not feeling understood by AI','Accuracy of the responses','I prefer talking to a person','I’m comfortable using AI','Something else']}
+];
+
+/* ---------- state ---------- */
+var S = { feelings:[], plate:[], otherText:'', introCard:0, lang:'English', chat:[], chatStage:0, breathDone:false,
+  useMode:null, q:[], qi:0, qtext:'', pr:[[],[],[]], prNote:'', p:{}, r:{}, toolkit:[], cards:[], last:null, lastFb:null, breathFrom:'chat',
+  buddy:{act:null, ints:[], time:null, idx:0, match:null, share:false}, couns:{share:null, summary:'', day:null, slot:null, how:'In person'}, wsAdded:[], resF:'All', seenFollow:false, slotOf:{},
+  aiHistory:[], serverOk:false, busy:false, resFilter:'all', flow:null, contact:null, tried:[], mine:[], flagAt:0, sq:null, done:{}, results:[], lastRes:null };
+var hist=[], cur=null, timers=[];
+function later(fn,ms){ var t=setTimeout(fn,ms); timers.push(t); return t; }
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+function mainChar(){ return S.feelings.length ? S.feelings[0] : 'notsure'; }
+function meStill(){ var k=mainChar(); return k==='notsure' ? '<div class="plainblob"></div>' : chr(k,false); }
+function esc(t){ return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function pill(label, act, extra){ return '<button class="pill'+(extra&&extra.cls?' '+extra.cls:'')+'" data-act="'+act+'"'+(extra&&extra.v!==undefined?' data-v="'+extra.v+'"':'')+(extra&&extra.to?' data-to="'+extra.to+'"':'')+(extra&&extra.dis?' disabled':'')+'>'+label+'</button>'; }
+function link(label, act, extra){ return '<button class="link" data-act="'+act+'"'+(extra&&extra.to?' data-to="'+extra.to+'"':'')+(extra&&extra.v!==undefined?' data-v="'+extra.v+'"':'')+'>'+label+'</button>'; }
+function toast(msg){ var old=phone.querySelector('.toast'); if(old) old.remove(); phone.insertAdjacentHTML('beforeend','<div class="toast" role="status">'+msg+'</div>'); var el=phone.querySelector('.toast'); setTimeout(function(){ if(el&&el.parentNode) el.remove(); }, 3200); }
+
+/* ---------- sound (generated in the browser, off by default) ---------- */
+var SND={on:false, ctx:null, amb:null};
+function actx(){ if(!SND.ctx){ var C=window.AudioContext||window.webkitAudioContext; if(!C) return null; SND.ctx=new C(); } if(SND.ctx.state==='suspended') SND.ctx.resume(); return SND.ctx; }
+function chime(f,dur,vol,delay){
+  if(!SND.on) return; var c=actx(); if(!c) return; var t=c.currentTime+(delay||0); dur=dur||1.8; vol=vol||0.12;
+  [[1,'sine',1],[2.01,'sine',.28],[3.02,'sine',.1]].forEach(function(p){ var o=c.createOscillator(), g=c.createGain(); o.type=p[1]; o.frequency.value=f*p[0];
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol*p[2],t+0.015); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+dur+0.05); });
+}
+function arp(notes,gap,vol){ notes.forEach(function(n,i){ chime(n,1.6,vol||.09,i*(gap||.12)); }); }
+function hum(on){ if(!SND.on) return; var c=actx(); if(!c) return; var t=c.currentTime; var o=c.createOscillator(), g=c.createGain(), f=c.createBiquadFilter(); o.type='sawtooth'; o.frequency.value=110; f.type='lowpass'; f.frequency.value=300;
+  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.03,t+.4); g.gain.exponentialRampToValueAtTime(0.0001,t+(on||4)); o.connect(f); f.connect(g); g.connect(c.destination); o.start(t); o.stop(t+(on||4)+.1); }
+function whoosh(){ if(!SND.on) return; var c=actx(); if(!c) return; var t=c.currentTime, len=c.sampleRate*0.9, b=c.createBuffer(1,len,c.sampleRate), d=b.getChannelData(0); for(var i=0;i<len;i++) d[i]=(Math.random()*2-1);
+  var s=c.createBufferSource(); s.buffer=b; var f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(1600,t+.7);
+  var g=c.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.06,t+.15); g.gain.exponentialRampToValueAtTime(0.0001,t+.85); s.connect(f); f.connect(g); g.connect(c.destination); s.start(t); s.stop(t+.9); }
+function ambOn(){
+  if(!SND.on||SND.amb) return; var c=actx(); if(!c) return; var t=c.currentTime;
+  var master=c.createGain(); master.gain.setValueAtTime(0.0001,t); master.gain.exponentialRampToValueAtTime(0.06,t+2.5); master.connect(c.destination);
+  var lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900; lp.connect(master);
+  var nodes=[master];
+  [130.81,196.0,261.63,329.63].forEach(function(f,i){ var o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.value=f; o.detune.value=(i%2?6:-6); g.gain.value=[.5,.35,.22,.12][i];
+    var l=c.createOscillator(), lg=c.createGain(); l.frequency.value=0.05+i*0.03; lg.gain.value=g.gain.value*0.5; l.connect(lg); lg.connect(g.gain); l.start();
+    o.connect(g); g.connect(lp); o.start(); nodes.push(o,l); });
+  var len=c.sampleRate*2, b=c.createBuffer(1,len,c.sampleRate), d=b.getChannelData(0), last=0; for(var i=0;i<len;i++){ var w=Math.random()*2-1; last=(last+0.02*w)/1.02; d[i]=last*3.5; }
+  var s=c.createBufferSource(); s.buffer=b; s.loop=true; var nf=c.createBiquadFilter(); nf.type='lowpass'; nf.frequency.value=600; var ng=c.createGain(); ng.gain.value=0.35; s.connect(nf); nf.connect(ng); ng.connect(master); s.start(); nodes.push(s);
+  SND.amb=nodes;
+}
+function ambOff(){ if(!SND.amb) return; var c=SND.ctx, nodes=SND.amb, m=nodes[0]; SND.amb=null; try{ m.gain.cancelScheduledValues(c.currentTime); m.gain.setValueAtTime(m.gain.value,c.currentTime); m.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+.8); }catch(e){} setTimeout(function(){ nodes.slice(1).forEach(function(n){ try{n.stop();}catch(e){} }); try{m.disconnect();}catch(e){} },900); }
+var SPK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="mute" d="M17 9l5 5M22 9l-5 5"/></svg>';
+
+function bar(noBack){ return '<div class="bar">'+(noBack?'<span></span>':'<button class="back" data-act="back" aria-label="Back">&#8249;</button>')+'<div class="right"><button class="snd" data-act="snd" aria-pressed="'+SND.on+'" aria-label="Sound '+(SND.on?'on':'off')+'">'+SPK+'</button><button class="exit" data-act="exit" aria-label="Quick exit">Exit <span aria-hidden="true">&#8594;</span></button></div></div>'; }
+var STRIP = '<div class="strip">A counsellor reviews flagged sessions.</div>';
+
+/* ---------- screens ---------- */
+var SC = {};
+
+/* 1 arrive (original) */
+SC.arrive = function(){
+  var spots=[['sunny',4,62,128,0],['knotted',62,64,132,.15],['foggy',33,76,130,.3],['buzzy',2,16,116,.45],['heavy',66,14,118,.6],['sleepy',36,3,108,.75]];
+  var chars=spots.map(function(s){ return '<div class="riser" style="left:'+s[1]+'%;top:'+s[2]+'%;width:'+s[3]+'px;animation-delay:'+s[4]+'s">'+chr(s[0])+'</div>'; }).join('');
+  var clouds=[[0,150,130],[20,190,150],[45,170,120],[66,200,160],[88,150,120]].map(function(c){ return '<i style="left:'+c[0]+'%;width:'+c[1]+'px;height:'+c[2]+'px"></i>'; }).join('');
+  return {bg:'violet', html:'<div class="arrive">'+chars+'<div class="clouds">'+clouds+'</div><div class="dot"></div><h1>Campus Guide</h1><p class="sub">A place to find the right kind of help.</p><button class="pill" data-act="go" data-to="intro">Begin</button></div>', raw:true};
+};
+
+/* 2 intro (original, English only) */
+SC.intro = function(){
+  var cards=[
+    ['This is a guide. It is not a counsellor and it cannot diagnose.',
+     '<svg viewBox="0 0 300 246"><path d="M60 200C140 190 150 160 120 150C70 134 110 100 200 96" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-dasharray="2 22"/><g class="roll"><circle cx="64" cy="198" r="22" fill="#7B61FF" opacity=".22"/><circle cx="64" cy="198" r="12" fill="#7B61FF"/></g></svg>'],
+    ['A counsellor reviews flagged sessions.',
+     '<svg viewBox="0 0 300 246"><path d="M40 216C110 210 120 190 160 186" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-dasharray="2 22"/><circle cx="46" cy="214" r="11" fill="#7B61FF"/><path d="M150 206V96l56-44l56 44v110z" fill="#F7C3D6"/><rect class="win" x="178" y="104" width="56" height="60" rx="10" fill="#B9A8EE"/><circle cx="206" cy="128" r="10" fill="#2A1A6E"/><path d="M188 164c2-20 34-20 36 0z" fill="#2A1A6E"/></svg>'],
+    ['You don’t need an account. You can see and delete what this holds at any time.',
+     '<svg viewBox="0 0 300 246"><rect class="fold" x="96" y="20" width="108" height="150" rx="14" fill="#fff"/><path d="M70 150h160v60a22 22 0 0 1-22 22H92a22 22 0 0 1-22-22z" fill="#7B61FF"/><path d="M70 150h160" stroke="#2A1A6E" stroke-width="4" stroke-dasharray="8 8"/></svg>']
+  ];
+  var i=S.introCard, c=cards[i];
+  var dots='<div class="dots">'+cards.map(function(_,n){return '<i class="'+(n===i?'on':'')+'"></i>';}).join('')+'</div>';
+  var extra = i===2 ? '<div class="choices">'+['English','हिंदी','मराठी'].map(function(l){return '<button class="chip '+(S.lang===l?'on':'')+'" data-act="lang" data-v="'+l+'">'+l+'</button>';}).join('')+'</div><p class="sub">Hindi and Marathi are machine-translated until counsellors review them.</p>' : '';
+  return {bg:'paper', html: dots+'<div class="pic">'+c[1]+'</div><h1 style="font-size:24px">'+c[0]+'</h1>'+extra+'<div class="push"><button class="pill" data-act="introNext">'+(i===2?'Start':'Next')+'</button><button class="link" data-act="go" data-to="usemode">Skip</button></div>'};
+};
+
+/* 2b anonymous or personalised (new) */
+SC.usemode = function(){
+  var m=[
+    ['anon','var(--sky)','Explore anonymously','No login. This chat is deleted when you close it. A counsellor only sees something if you send them a note, or if the guide sees signs you may be in danger.','<svg viewBox="0 0 24 24"><path d="M3 12s3.5-6 9-6s9 6 9 6s-3.5 6-9 6s-9-6-9-6z"/><path d="M4 20L20 4"/></svg>'],
+    ['pers','var(--pink)','Use personalised support','Keeps what helped you, your saved activities and check-ins, under a private code instead of your name.','<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>']
+  ];
+  return {bg:'paper', html:'<h1>How would you like to use Campus Guide?</h1>'+m.map(function(x,n){ return '<button class="mode '+(S.useMode===x[0]?'on':'')+'" data-act="usemode" data-v="'+x[0]+'" style="animation-delay:'+(n*.09)+'s"><span class="ic" style="background:'+x[1]+'">'+x[4]+'</span><b>'+x[2]+'</b><span>'+x[3]+'</span></button>'; }).join('')+'<p class="sub">You can change this at any time.</p><button class="link" data-act="go" data-to="trust">Who sees what?</button><div class="push"><button class="pill" id="umGo" data-act="umNext" '+(S.useMode?'':'disabled')+'>Continue</button></div>'};
+};
+
+/* 3 ways (original + routes) */
+SC.ways = function(){
+  var w=[
+    ['checkin','var(--pink)','Talk it through','Start with how things are','<svg viewBox="0 0 64 64"><path d="M10 14h44a6 6 0 0 1 6 6v20a6 6 0 0 1-6 6H30L18 56V46h-8a6 6 0 0 1-6-6V20a6 6 0 0 1 6-6z" fill="#fff"/><circle cx="32" cy="30" r="6" fill="#7B61FF"/></svg>'],
+    ['map','var(--sky)','Show me what’s here','See every kind of help','<svg viewBox="0 0 64 64"><path d="M6 14l16-6l20 6l16-6v42l-16 6l-20-6l-16 6z" fill="#fff"/><path d="M22 8v42M42 14v42" stroke="#2A1A6E" stroke-width="2.5"/></svg>'],
+    ['know','var(--yellow)','I know what I need','Go straight there','<svg viewBox="0 0 64 64"><path d="M8 32h44M36 16l16 16l-16 16" fill="none" stroke="#2A1A6E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>']
+  ];
+  var html='<h1>How would you like to start?</h1>'+w.map(function(x,n){ return '<button class="way" data-act="go" data-to="'+x[0]+'" style="background:'+x[1]+';animation-delay:'+(n*.09)+'s"><span><b>'+x[2]+'</b><span>'+x[3]+'</span></span>'+x[4]+'</button>'; }).join('')+'<div class="push"><button class="link" data-act="go" data-to="urgent">I need help right now</button></div>';
+  return {bg:'paper', html:html};
+};
+
+/* 4 check-in (original) */
+SC.checkin = function(){
+  var tiles=ORDER.map(function(k){ return '<button class="tile '+(S.feelings.indexOf(k)>-1?'on':'')+'" data-act="feel" data-v="'+k+'" aria-pressed="'+(S.feelings.indexOf(k)>-1)+'"><span class="holder">'+chr(k)+'</span>'+CH[k].label+'</button>'; }).join('');
+  var ns=S.feelings.indexOf('notsure')>-1;
+  tiles+='<button class="tile wide '+(ns?'on':'')+'" data-act="feel" data-v="notsure" aria-pressed="'+ns+'"><span class="holder">'+chr('notsure')+'</span>Not sure</button>';
+  return {bg:'pink', html:'<h1>Which one is closest to you right now?</h1><p class="sub" style="color:var(--ink)">Pick one or more.</p><div class="grid '+(S.feelings.length?'has-pick':'')+'" id="grid">'+tiles+'</div><div class="push"><button class="pill" id="feelGo" data-act="go" data-to="plate" '+(S.feelings.length?'':'disabled')+'>Continue</button><button class="link" data-act="go" data-to="plate">Skip</button></div>'};
+};
+
+/* 5 plate (original) */
+function plateHTML(animateKey){
+  return S.plate.map(function(k,i){ var s=SLOTS[(S.slotOf[k]!==undefined?S.slotOf[k]:i)%SLOTS.length]; var still = (animateKey && k!==animateKey) ? 'animation:none;' : '';
+    return '<span class="tok" style="left:'+s[0]+'%;top:'+s[1]+'%;background:'+P[k][2]+';'+still+'">'+icon(k)+'</span>'; }).join('');
+}
+SC.plate = function(){
+  var opts=PKEYS.map(function(k){ return '<button class="card-opt '+(S.plate.indexOf(k)>-1?'on':'')+'" data-act="plate" data-v="'+k+'" aria-pressed="'+(S.plate.indexOf(k)>-1)+'">'+icon(k)+P[k][0]+'</button>'; }).join('');
+  var other = S.plate.indexOf('other')>-1 ? '<input class="else" id="otherText" type="text" maxlength="60" placeholder="A few words, or leave it empty" value="'+esc(S.otherText)+'" aria-label="Something else">' : '';
+  return {bg:'lilac', html:'<h1>What’s on your plate?</h1><div class="plate" id="plateBox" aria-hidden="true">'+plateHTML('none')+'</div><div class="opts" id="opts">'+opts+'</div><div id="otherWrap">'+other+'</div><div class="push"><button class="pill" data-act="toChat">That’s it for now</button></div>'};
+};
+
+/* 6 chat (original, extended past the first build) */
+function give(){
+  var has=function(k){return S.plate.indexOf(k)>-1;};
+  if(has('exams')&&has('sleep')) return 'Exams and poor sleep often feed each other. Here is a two-minute exercise many students use before bed.';
+  if(has('exams')) return 'Exam weeks put a lot on the body as well as the mind. Here is a two-minute exercise to slow things down.';
+  if(has('sleep')) return 'Poor sleep makes most things feel harder. Here is a two-minute exercise that can help you wind down.';
+  if(has('alone')) return 'Feeling alone is more common on campus than it looks. Before anything else, here is two minutes just for you.';
+  return 'When a lot is going on, slowing your breathing for two minutes can take the edge off. It is a small place to start.';
+}
+function exCard(){ return '<button class="excard" data-act="go" data-to="breathe"><span class="me">'+chr(mainChar(),false)+'</span><span><b>Breathe for two minutes</b><span>Opens here. Stop whenever you like.</span></span></button>'; }
+function aMsg(html){ return '<div class="msg"><span class="dot"></span><div class="bubble">'+html+'</div></div>'; }
+function uMsg(t){ return '<div class="msg me"><div class="bubble">'+t+'</div></div>'; }
+
+SC.chat = function(){
+  var toks=S.plate.map(function(k){ return '<span class="minitok" style="background:'+P[k][2]+'">'+icon(k)+'</span>'; }).join('');
+  var top='<div class="chatbar"><span class="me">'+chr(mainChar(),false)+'</span>'+toks+(S.serverOk?'':'<span style="margin-left:auto" class="tag sample">Sample replies</span>')+'</div>';
+  return {bg:'paper', strip:true, html: top+'<div class="log" id="log">'+S.chat.join('')+'</div><div class="replies" id="replies"></div>'+composer(), after: chatStep};
+};
+function say(html, then){
+  var log=document.getElementById('log'); if(!log) return;
+  var w=document.createElement('div'); w.className='msg'; w.innerHTML='<span class="dot writing"></span>'; log.appendChild(w); scrollEnd();
+  later(function(){ w.remove(); S.chat.push(aMsg(html)); log.insertAdjacentHTML('beforeend', aMsg(html)); scrollEnd(); then&&then(); }, 1100);
+}
+function scrollEnd(){ var m=phone.querySelector('.scr'); if(m) m.scrollTop=m.scrollHeight; }
+function replies(list){ var r=document.getElementById('replies'); if(!r) return; r.innerHTML=list.map(function(x){ return '<button class="pill ghost" data-act="reply" data-v="'+x[0]+'">'+x[1]+'</button>'; }).join(''); scrollEnd(); }
+function chatStep(){
+  if(S.flow){ pwStep(); }
+  else if(S.chatStage===0 && pwRoute()){ S.chatStage=-1; pwRun(pwRoute()); }
+  else if(S.chatStage===0){ S.chatStage=1; say(give()+exCard()+'Would you like to try it now, or look at what else is here?', function(){ S.chatStage=2; chatStep(); }); }
+  else if(S.chatStage===1){ S.chatStage=0; S.chat=[]; chatStep(); }
+  else if(S.chatStage===2){ replies([['try','Try it now'],['else','See what else is here']]); }
+  else if(S.chatStage===3){ S.chatStage=4; say((S.breathDone?'That’s two minutes. ':'You can stop at any point. ')+'How was that?', function(){ S.chatStage=5; chatStep(); }); }
+  else if(S.chatStage===4){ S.chatStage=3; chatStep(); }
+  else if(S.chatStage===5){ replies(FB.map(function(f){ return ['fb_'+f[0], f[1]]; })); }
+  else if(S.chatStage===6){ S.chatStage=7; say('Would it help to look a little more closely at what’s been going on? It’s seven short questions. You can skip any of them.', function(){ S.chatStage=8; chatStep(); }); }
+  else if(S.chatStage===7){ S.chatStage=6; chatStep(); }
+  else if(S.chatStage===8){ replies([['q7','Okay, let’s do it'],['else','See what else is here']]); }
+}
+
+/* ===================== scaffold (server, AI chat, pathways, questionnaires, handoff, languages) ===================== */
+/* ---------- scaffold: guided pathways (common doc, Phase 2 step 05) ---------- */
+// Step types: s = bot says, b = one button, o = options [label, next flow], w = private writing box, w2 = two-column box, h = counsellor card.
+var PW = {
+ g1:[['s','That’s okay, breathing doesn’t always work when your mind is racing. Let’s try anchoring to the room around you. Name 5 things you can see.'],['w','Five things you can see'],
+  ['s','Now, name 4 things you can physically feel. (e.g., the texture of your blanket, the weight of your body on the bed, your feet on the floor)'],['w','Four things you can feel'],
+  ['s','Now, I want you to listen closely. Name 3 things you can hear outside or inside the room (e.g., a fan humming, distant traffic).'],['w','Three things you can hear'],
+  ['s','You’re doing so well, you’re almost at the end of this exercise. Now, name 2 things you can smell. If you can’t smell anything, imagine two of your favourite scents, like rain or coffee.'],['w','Two things you can smell'],
+  ['s','Well done, just this one last bit for me. Name 1 thing you can taste right now, or take a slow sip of water.'],['w','One thing you can taste'],
+  ['s','Did this help lower the intensity?'],['o',[['Yes, a bit','done'],['No, still intense','g1b']]]],
+ g1b:[['s','Let’s get those racing thoughts out of your head. Write down the top 3 things you are worried about right now. Or, if you prefer, you can reach a counsellor.'],['w','Top 3 worries'],['o',[['That helped','done'],['I’d like to reach a counsellor','hand']]]],
+ w1:[['s','Navigating relationships can leave you feeling tied in knots, especially at night when things get quiet. Instead of trying to force sleep, it sometimes helps to get those thoughts out of your head. Let’s try a short writing exercise. Finish the sentences as they come.'],
+  ['s','“Right now, the hardest part about this situation is…”'],['w','Finish the sentence'],
+  ['s','“If I could say one thing to them right now, it would be…”'],['w','Finish the sentence'],
+  ['s','“One thing I cannot control right now is…”'],['w','Finish the sentence'],
+  ['s','Did getting those thoughts out help settle your mind a bit?'],['o',[['Yes, I feel lighter','done'],['No, my mind is still racing','w2']]]],
+ w2:[['s','That’s okay. Putting feelings into words doesn’t always ease them straight away, so let’s not repeat the same thing. What do you need most right now?'],['o',[['I feel overwhelmed','wg'],['I keep overthinking','wp'],['I feel lonely','wl']]]],
+ wg:[['s','That’s okay. Let’s bring your attention back to the present instead of everything running through your mind.<br>Notice five things you can see around you.<br>Notice four things you can physically feel.<br>Notice three sounds around you.<br>Take one slow, comfortable breath. There’s no rush. Just take your time.'],['o',[['I’m done','done']]]],
+ wp:[['s','Sometimes we keep replaying conversations because we feel we need to resolve everything immediately. But not everything needs an answer tonight. Complete these sentences:'],
+  ['s','“Something I want to remind myself is…”'],['w','Finish the sentence'],['s','“This is something I can come back to tomorrow because…”'],['w','Finish the sentence'],['s','“One small thing I can do about this tomorrow is…”'],['w','Finish the sentence'],
+  ['s','You don’t have to solve everything right now. It’s okay to give yourself some space.'],['o',[['Thanks','done']]]],
+ wl:[['s','Sometimes what we need isn’t a solution but a reminder that we don’t have to navigate everything alone. Complete these sentences:'],
+  ['s','“Someone I feel comfortable talking to is…”'],['w','Finish the sentence'],['s','“One thing I would want them to know is…”'],['w','Finish the sentence'],['s','“Something that makes me feel supported is…”'],['w','Finish the sentence'],
+  ['s','You don’t have to reach out right now. Just take a moment to think about the people who make you feel less alone.'],['o',[['Thanks','done'],['I’d like to reach a counsellor','hand']]]],
+ b1:[['s','That is a lot to carry all at once, and it makes complete sense that you’re feeling overwhelmed. When everything piles up, your nervous system can go into overdrive. Let’s try a quick physical anchoring technique to help your body feel steady again. Would you like to try the Butterfly Hug?'],['o',[['Yes, let’s try','b2'],['Look at what else is here','res']]]],
+ b2:[['s','Cross your arms over your chest, so your fingertips are resting just below your collarbones. Your hands should look like a butterfly.'],['b','Next'],
+  ['s','Close your eyes if that feels safe. Slowly tap your hands one at a time, alternating left and right, like a slow heartbeat. Left, right, left, right.'],['b','Next'],
+  ['s','Keep this slow rhythm. Breathe in slowly… and let it out. Tap for just 30 more seconds.'],['b','I’ve finished'],
+  ['s','Is your breathing feeling a bit steadier, or does the pile still feel too heavy?'],['o',[['I feel steadier','done'],['It’s still too heavy','b3']]]],
+ b3:[['s','It is completely normal to still feel the weight of everything. When the pile is this high, the brain tries to solve it all at once. Let’s break it down so you don’t have to carry it all tonight.'],
+  ['s','Think about everything on your plate right now. Write one thing you have the power to act on tomorrow, and one thing that is out of your hands right now. If you’d rather not type, you can write it on paper.'],['w2'],
+  ['s','How are you feeling after breaking that down?'],['o',[['More manageable','done'],['I am completely stuck','hand']]]],
+ n1:[['s','That is completely okay. Sometimes things are just a heavy blur and it is hard to find the exact word. Instead of trying to figure it out, it can help to step away from your thoughts for a second. Would you like to do a quick body scan to see where you might be holding tension?'],['o',[['Yes, let’s try','n2'],['Look at what else is here','res']]]],
+ n2:[['s','Let’s check in with your physical space. Unclench your jaw. Let your tongue drop from the roof of your mouth.'],['b','Next'],
+  ['s','Drop your shoulders away from your ears. If you are holding your breath, take a slow exhale.'],['b','Next'],
+  ['s','Notice if your chest or stomach feels tight. You don’t have to change it; just notice it.'],['b','Next'],
+  ['s','Did checking in with your body help you feel a bit more grounded, or is the blur still feeling too heavy?'],['o',[['A bit grounded','done'],['Still too heavy','n3']]]],
+ n3:[['s','It is completely fine if checking in with your body didn’t help, or if it felt uncomfortable. Sometimes the best thing to do is step away from the feelings and give your brain a neutral task. Let’s try a quick mental puzzle.'],
+  ['s','Think of a category like “fruits” or “cities” and try to name one for each of the first five letters of the alphabet (A, B, C, D, E).'],['b','Done'],
+  ['s','Now, list three movies or shows you know.'],['b','Done'],
+  ['s','Did shifting your focus help clear the blur a little, or do you feel you need some human support to untangle this?'],['o',[['I feel clearer','done'],['I need support','hand']]]],
+ done:[['s','Thank you for taking that time. You can come back whenever you like.'],['q'],['o',[['Show me what’s here','res']]]],
+ hand:[['s','Sometimes these self-guided tools aren’t quite enough, and that is completely okay. You deserve support in carrying this. Here is how to reach a counsellor.'],['q'],['h']]
+};
+function pwRoute(){
+  var f=S.feelings, p=S.plate, has=function(k){return p.indexOf(k)>-1;};
+  var n=p.filter(function(k){return k!=='other';}).length;
+  if(f.indexOf('knotted')>-1 || n>=3) return 'b1';
+  if(f.indexOf('notsure')>-1) return 'n1';
+  if((has('friends')||has('family')) && (has('sleep')||f.indexOf('heavy')>-1)) return 'w1';
+  return null;
+}
+function pwRun(id){ if(TRIED[id] && S.tried.indexOf(TRIED[id])<0) S.tried.push(TRIED[id]); S.flow={id:id,i:0}; pwStep(); }
+function pwRep(list){ var r=document.getElementById('replies'); if(!r) return; r.innerHTML=list.map(function(x){ return '<button class="pill ghost" data-act="'+x[0]+'" data-v="'+x[1]+'">'+x[2]+'</button>'; }).join(''); scrollEnd(); }
+function pwEcho(label){ var log=document.getElementById('log'); if(!log) return; S.chat.push(uMsg(esc(label))); log.insertAdjacentHTML('beforeend', uMsg(esc(label))); }
+function pwStep(){
+  var f=S.flow; if(!f) return;
+  var st=PW[f.id][f.i], log=document.getElementById('log');
+  if(!st){ S.flow=null; return; }
+  var next=function(){ f.i++; pwStep(); };
+  if(st[0]==='s') say(st[1], next);
+  else if(st[0]==='b') pwRep([['fnext','',st[1]]]);
+  else if(st[0]==='o') pwRep(st[1].map(function(o){ return ['fgo',o[1],o[0]]; }));
+  else if(st[0]==='w') pwWrite(false, st[1]);
+  else if(st[0]==='w2') pwWrite(true);
+  else if(st[0]==='q') pwOffer();
+  else if(st[0]==='h'){
+    var h=SRES.filter(function(r){ return r.id==='book-counsellor'; }).map(resCard).join('') || 'Please ask the counselling centre for an appointment.';
+    S.flow=null; if(log){ S.chat.push(aMsg(h)); log.insertAdjacentHTML('beforeend', aMsg(h)); scrollEnd(); }
+    var rr=document.getElementById('replies'); if(rr) rr.innerHTML='<button class="pill ghost" data-act="go" data-to="handoff">Send a short note to a counsellor</button><button class="pill ghost" data-act="go" data-to="couns">Book a session</button>';
+  }
+}
+// Private boxes: text stays in the page only. It is never added to S.chat or S.aiHistory and never sent to the server.
+function pwWrite(two, ph){
+  var log=document.getElementById('log'); if(!log || document.getElementById('wbox')) return;
+  var ta=two ? '<div class="wcols"><label>I can control this<textarea class="wta" rows="3"></textarea></label><label>I cannot control this tonight<textarea class="wta" rows="3"></textarea></label></div>'
+             : '<textarea class="wta" rows="3" placeholder="'+(ph||'')+'" aria-label="Private note"></textarea>';
+  log.insertAdjacentHTML('beforeend','<div class="msg" id="wbox"><span class="dot"></span><div class="bubble">'+ta+'<p class="priv">This space is entirely private. Your words are not saved, tracked, or sent to anyone. They will disappear when you are done.</p><button class="pill" data-act="frel" data-v="release">Release / let it go</button><button class="link" data-act="frel" data-v="keep">I’ll keep this to myself</button></div></div>');
+  scrollEnd();
+}
+function pwRelease(kind){
+  var b=document.getElementById('wbox'), log=document.getElementById('log'); if(!b) return;
+  b.querySelectorAll('textarea').forEach(function(x){ x.value=''; });
+  b.remove();
+  var m='<span class="released">'+(kind==='keep'?'Kept with you.':'Let go.')+'</span>';
+  S.chat.push(aMsg(m)); if(log) log.insertAdjacentHTML('beforeend', aMsg(m));
+  if(S.flow){ S.flow.i++; pwStep(); }
+}
+
+
+/* ---------- scaffold: emergency contact (optional), handoff note, what this holds, trust map ---------- */
+var TRIED={g1:'5-4-3-2-1 grounding',w1:'a writing exercise',b2:'the Butterfly Hug',n2:'a body scan'};
+function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+function flagUrgent(){
+  if(S.flagAt && Date.now()-S.flagAt<300000) return; S.flagAt=Date.now();
+  fetch('/api/flag',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contact:S.contact||null})}).catch(function(){});
+}
+SC.contact = function(){
+  return {bg:'paper', html:'<h1>Someone we can reach in an emergency?</h1><p class="sub">Optional. If the guide sees signs you may be in danger, the counselling team can see this. Until then it is not saved anywhere, and it is not shared otherwise. You can skip it and stay fully anonymous.</p><label class="hol">Name and phone number<input class="else" id="ecInput" type="text" maxlength="80" placeholder="e.g. Mum, 98xxxxxx0"></label><div class="push"><button class="pill" data-act="ecSave">Save for emergencies only</button><button class="link" data-act="ecSkip">Skip, stay anonymous</button><button class="link" data-act="go" data-to="trust">Who sees what?</button></div>'};
+};
+SC.handoff = function(){
+  var on=S.plate.filter(function(k){return k!=='other';}).map(function(k){return P[k][0];}).join(', ');
+  var tried=(S.breathDone?['two-minute breathing']:[]).concat(S.tried).join(', ');
+  var c=S.contact?'<label class="hol"><input type="checkbox" id="hoContact"> Include the emergency contact I added</label>':'';
+  return {bg:'paper', html:'<h1>A short note for a counsellor</h1><p class="sub">Nothing is sent until you press Send. Change or delete anything. The counsellor will not see your chat or anything from the private boxes.</p>'
+   +'<label class="hol">What’s been going on<textarea class="wta" id="hoWhat" rows="3">'+esc(on?'On my mind: '+on:'')+'</textarea></label>'
+   +'<label class="hol">For how long<select class="wta" id="hoLong"><option>A few days</option><option>A couple of weeks</option><option>A month or more</option></select></label>'
+   +'<label class="hol">What I’ve tried<textarea class="wta" id="hoTried" rows="2">'+esc(tried)+'</textarea></label>'+c+(S.results.length?'<label class="hol"><input type="checkbox" id="hoRes"> Include my questionnaire answers and results</label>':'')+'<p class="sub" id="hoMsg"></p>'
+   +'<div class="push"><button class="pill" data-act="hoSend">Send to counsellors</button><button class="link" data-act="back">Not now</button><button class="link" data-act="go" data-to="trust">Who sees what?</button></div>'};
+};
+SC.sent = function(){
+  var m=S.mine[S.mine.length-1];
+  return {bg:'sky', html:'<h1>Sent</h1><p class="sub" style="color:var(--ink)">A counsellor can now see this note on their dashboard. That does not mean someone is watching right now. If you need help right away, use the help-now button.</p><p class="sub" style="color:var(--ink)">Your code, if you want to delete it later: <b>'+esc(m?m.id:'')+'</b></p><div class="push"><button class="pill" data-act="go" data-to="mydata">What this holds</button><button class="link" data-act="go" data-to="chat">Back to chat</button></div>'};
+};
+SC.mydata = function(){
+  var items=S.mine.map(function(m){ return '<div class="rescard"><b>Note '+esc(m.id)+'</b><span>'+esc(m.summary.concern||'')+' · '+esc(m.summary.duration||'')+'</span><button class="link" data-act="del" data-v="'+esc(m.id)+'">Delete this note</button></div>'; }).join('');
+  return {bg:'paper', html:'<h1>What this holds</h1><p class="sub">Typing in the private boxes is never saved. The only things stored are a note you choose to send, and a safety flag if the guide sees signs you may be in danger. You can delete notes. Flags are kept for the counselling team.</p>'+(items||'<p class="sub">No notes from this visit.</p>')+'<label class="hol">Code from an earlier visit<input class="else" id="delCode" type="text" maxlength="12" placeholder="Code"></label><button class="link" data-act="del" data-v="code">Delete using this code</button><p class="sub" id="delMsg"></p><div class="push"><button class="link" data-act="go" data-to="trust">Who sees what?</button><button class="pill" data-act="back">Go back</button></div>'};
+};
+SC.trust = function(){
+  var rows=[['You','Everything you type in the private boxes. It disappears when you press release.'],['The AI','What you type in the chat box is sent to an AI service to get a reply. This app does not store it.'],['The counselling team','Only a note you choose to send, or a safety flag if the guide sees signs you may be in danger. Never your chat.'],['Your counsellor and the head of the centre','What you tell a counsellor in a session stays in FLAME’s secure system, and other counsellors can’t open it. (To be confirmed by FLAME counsellors.)'],['Nobody else','Not professors and not other students. There are no accounts here.']];
+  return {bg:'paper', html:'<h1>Who sees what</h1><p class="sub">Plain words, no small print.</p>'+rows.map(function(r){ return '<div class="rescard"><b>'+r[0]+'</b><span>'+r[1]+'</span></div>'; }).join('')+'<div class="push"><button class="pill" data-act="back">Go back</button></div>'};
+};
+
+
+/* ---------- scaffold: questionnaires, survey, translation layer ---------- */
+var SC_CFG=null, LC={'हिंदी':'hi','मराठी':'mr'}, CUR={hi:{},mr:{}}, MT={hi:{},mr:{}}, ORIG=new WeakMap(), ASKED={}, FAILS={};
+function lc(){ return LC[S.lang]||'en'; }
+function norm(s){ return s.replace(/\s+/g,' ').trim(); }
+// English text of an element, even after it has been translated.
+function enText(el){ var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), n, o=''; while((n=w.nextNode())) o+=(ORIG.has(n)?ORIG.get(n):n.nodeValue)+' '; return norm(o); }
+// Translation layer: reviewed phrases (lang/*.json) win; otherwise the server translates and caches. Questionnaires and the Urgent screen use reviewed phrases only. data-notr marks text never to translate.
+function trTree(root){
+  var l=lc(), w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT), n, need={}, any=false;
+  while((n=w.nextNode())){
+    var p=n.parentElement; if(!p||p.closest('[data-notr],textarea,script,style,[data-act="lang"]')) continue;
+    var en=ORIG.has(n)?ORIG.get(n):n.nodeValue, k=norm(en);
+    if(l==='en'){ if(ORIG.has(n)) n.nodeValue=en; continue; }
+    if(!/[A-Za-z]{2}/.test(k)) continue;
+    ORIG.set(n,en);
+    var t=CUR[l][k]||MT[l][k];
+    if(t) n.nodeValue=en.match(/^\s*/)[0]+t+en.match(/\s*$/)[0];
+    else if(!p.closest('[data-curated]') && cur!=='urgent' && !ASKED[l+'|'+k]){ need[k]=1; any=true; }
+  }
+  if(!any) return;
+  var keys=Object.keys(need).slice(0,40); keys.forEach(function(k){ ASKED[l+'|'+k]=1; });
+  fetch('/api/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lang:l,strings:keys})})
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(d){ Object.assign(MT[l],d.map||{}); if(root.isConnected) trTree(root); })
+    .catch(function(){ var fc=0; keys.forEach(function(k){ var f=l+'|'+k; FAILS[f]=(FAILS[f]||0)+1; fc=Math.max(fc,FAILS[f]); });
+      if(fc<4) setTimeout(function(){ keys.forEach(function(k){ delete ASKED[l+'|'+k]; }); if(root.isConnected && lc()===l) trTree(root); }, 15000*fc); });
+}
+new MutationObserver(function(ms){ if(lc()==='en') return; ms.forEach(function(m){ m.addedNodes.forEach(function(n){ var el=n.nodeType===1?n:n.parentElement; if(el) trTree(el); }); }); }).observe(phone,{childList:true,subtree:true});
+
+function qDef(id){ return id==='survey'?SC_CFG.survey:SC_CFG.scales.filter(function(x){return x.id===id;})[0]; }
+// One place decides what to offer next. Move or switch it off via "placement" in scales.json when the journey map is final.
+function nextOffer(){
+  var C=SC_CFG; if(!C) return null;
+  if(C.placement.survey==='pathwayEnd' && !S.done.survey) return {kind:'survey',def:C.survey};
+  if(C.placement.scales!=='pathwayEnd' || S.results.filter(function(r){return r.kind==='scale';}).length>=2) return null;
+  var f=S.feelings, p=S.plate;
+  var d=C.scales.filter(function(x){ return x.enabled && x.items.length && !S.done[x.id] && ((x.offer.feelings||[]).some(function(k){return f.indexOf(k)>-1;}) || (x.offer.plate||[]).some(function(k){return p.indexOf(k)>-1;})); })[0];
+  return d?{kind:'scale',def:d}:null;
+}
+function pwOffer(){
+  var o=nextOffer(); if(!o){ S.flow.i++; return pwStep(); }
+  var msg=o.kind==='survey' ? 'If you’d like, I can ask a few short questions about what you’re going through. There are no right or wrong answers, and you can stop any time. Would you like to?'
+    : 'If you’d like, I can offer a short standardised questionnaire called the '+o.def.name+'. It doesn’t diagnose anything, but it can help show whether speaking with a counsellor may be useful. Would you like to complete it?';
+  say(msg, function(){ pwRep([['fq',o.def.id,'Yes, I’ll answer'],['fnext','','Not now']]); });
+}
+SC.quiz = function(){
+  var q=S.sq, d=qDef(q.id), it=d.items[q.idx], o=it.o||d.o;
+  return {bg:'paper', html:'<div data-curated><p class="sub">'+esc(d.name)+' · '+(q.idx+1)+' of '+d.items.length+'</p>'+(d.stem?'<p class="sub">'+esc(d.stem)+'</p>':'')+'<p style="font-size:18px;font-weight:600;margin:10px 0">'+esc(it.q)+'</p><div class="choices">'+o.map(function(l,i){ return '<button class="pill ghost" data-act="qAns" data-v="'+i+'">'+esc(l)+'</button>'; }).join('')+'</div></div><div class="push"><button class="link" data-act="back">Stop for now</button></div>'};
+};
+SC.qres = function(){
+  var r=S.lastRes, d=qDef(r.id), sc=Scoring.score(d,r.answers);
+  return {bg:'sky', html:'<h1 data-curated>'+esc(d.name)+'</h1><p class="sub" style="color:var(--ink)">Your score: <b>'+sc.score+'</b> out of '+d.max+'. '+esc(d.dir||'')+'</p><p class="sub" style="color:var(--ink)">This isn’t a diagnosis. It’s one snapshot, and it can help show whether talking to a counsellor may be useful. A comfortable score doesn’t mean you can’t ask for support.</p><div class="push"><button class="pill" data-act="go" data-to="handoff">Send a short note to a counsellor</button><button class="link" data-act="go" data-to="chat">Back to chat</button></div>'};
+};
+
+
+/* ---------- scaffold: AI chat + resources ---------- */
+function resCard(r){
+  var inner='<b>'+esc(r.title)+(r.approved?'':' <span class="tag">Pending review</span>')+'</b><span>'+esc(r.blurb||'')+'</span>';
+  if(/^app:/.test(r.url)){ var to=r.url.slice(4); return A(to) ? '<button class="rescard" data-act="openAct" data-v="'+esc(to)+'">'+inner+'</button>' : '<button class="rescard" data-act="go" data-to="'+esc(to)+'">'+inner+'</button>'; }
+  if(/^(https?:\/\/|guides\/)/.test(r.url)) return '<a class="rescard" href="'+esc(r.url)+'" target="_blank" rel="noopener noreferrer">'+inner+'</a>';
+  return '';
+}
+function composer(){
+  if(!S.serverOk) return '';
+  return '<div class="push"><div class="composer"><textarea id="compose" rows="1" maxlength="1000" placeholder="Type here, or use the buttons" aria-label="Message"></textarea><button class="send" data-act="send" aria-label="Send">&#8594;</button></div><p class="sub" style="font-size:12px">You are talking to an AI, not a person. This app does not store what you type.</p></div>';
+}
+function askAI(){
+  return fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.aiHistory,lang:lc(),context:{feelings:S.feelings,plate:S.plate}})})
+    .then(function(r){ if(!r.ok) throw new Error('chat '+r.status); return r.json(); });
+}
+function sendMsg(){
+  var box=document.getElementById('compose'); if(!box||S.busy) return;
+  var text=box.value.trim(); if(!text) return;
+  box.value=''; S.busy=true;
+  var log=document.getElementById('log');
+  var um=uMsg('<span data-notr>'+esc(text)+'</span>'); S.chat.push(um); log.insertAdjacentHTML('beforeend', um);
+  S.aiHistory.push({role:'user',content:text});
+  var w=document.createElement('div'); w.className='msg'; w.innerHTML='<span class="dot writing"></span>'; log.appendChild(w); scrollEnd();
+  askAI().then(function(d){
+    w.remove(); S.busy=false;
+    if(d.escalate){ go('urgent'); return; }
+    var html='<span data-notr>'+esc(d.reply).replace(/\n/g,'<br>')+'</span>'+(d.resources||[]).map(resCard).join('');
+    S.aiHistory.push({role:'assistant',content:d.reply});
+    S.chat.push(aMsg(html)); log.insertAdjacentHTML('beforeend', aMsg(html)); scrollEnd();
+  }).catch(function(){
+    w.remove(); S.busy=false;
+    var m='I can’t reach the guide right now. The exercises and resources here still work.';
+    S.chat.push(aMsg(m)); log.insertAdjacentHTML('beforeend', aMsg(m)); scrollEnd();
+  });
+}
+
+
+function resourcesLive(){
+  var f=S.resFilter, tags=['all'].concat(PKEYS);
+  var chips=tags.map(function(k){ return '<button class="chip '+(f===k?'on':'')+'" data-act="resFilter" data-v="'+k+'">'+(k==='all'?'All':P[k][0])+'</button>'; }).join('');
+  var list=SRES.filter(function(r){ return f==='all'||(r.tags||[]).indexOf(f)>-1; }).map(resCard).join('');
+  return {bg:'paper', html:'<h1>Read and watch</h1><p class="sub">Help chosen by counsellors. Items marked pending have not been reviewed yet.</p><div class="chips-row">'+chips+'</div><div class="reslist">'+(list||'<p class="sub">Nothing here yet.</p>')+'</div>'};
+}
+
+
+/* 7 breathe (original, with sound) */
+SC.breathe = function(){
+  var k=mainChar();
+  var who = k==='notsure' ? '<div class="plainblob"></div>' : chr(k,false);
+  return {bg:'sky', amb:true, html:'<h1>Breathe for two minutes</h1><div class="breath"><div class="ringwrap"><svg viewBox="0 0 250 250" aria-hidden="true"><circle class="track" cx="125" cy="125" r="118"/><circle class="prog" id="prog" cx="125" cy="125" r="118"/></svg><div class="breather" id="breather">'+who+'</div></div><div class="word" id="word" aria-live="polite">Ready</div></div><div class="push"><button class="pill" id="bStart" data-act="bStart">Start</button><button class="link" data-act="bStop">Stop here</button></div>', after:function(){ if(S.breathFrom==='lib') later(runBreath,900); }};
+};
+function breathEnd(){ if(S.breathFrom==='lib'){ S.last='breathe'; go('actCheck',{id:'breathe'},false); } else { hist.pop(); S.chatStage=3; S.last='breathe'; go('chat',false); } }
+function runBreath(){
+  var b=document.getElementById('breather'), w=document.getElementById('word'), pr=document.getElementById('prog'), btn=document.getElementById('bStart');
+  if(!b) return; btn.disabled=true; btn.textContent='Breathing…';
+  var phases=[['In',4000,1.2,523.25],['Hold',2000,1.2,659.25],['Out',6000,.9,392]], cycles=10, total=cycles*12000, elapsed=0, n=0;
+  function step(){
+    if(!document.getElementById('breather')) return;
+    if(n>=cycles*3){ S.breathDone=true; w.textContent='Done'; arp([523.25,659.25,783.99]); later(breathEnd,900); return; }
+    var p=phases[n%3]; w.textContent=p[0]; chime(p[3],p[0]==='Out'?3:2,.07);
+    b.classList.toggle('out', p[0]==='Out');
+    b.style.transition='transform '+p[1]+'ms ease-in-out'; b.style.transform='scale('+p[2]+')';
+    elapsed+=p[1]; pr.style.transition='stroke-dashoffset '+p[1]+'ms linear'; pr.style.strokeDashoffset=String(741*(1-elapsed/total));
+    n++; later(step,p[1]);
+  }
+  step();
+}
+
+/* ---------- show me what's here / I know what I need ---------- */
+var IC = {
+  acts:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>',
+  res:'<svg viewBox="0 0 24 24"><path d="M4 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4zM20 5h-6a3 3 0 0 0-3 3"/><path d="M20 5v13h-7"/></svg>',
+  buddy:'<svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c1-4 9-4 10 0M11 19c1-4 9-4 10 0"/></svg>',
+  ws:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  couns:'<svg viewBox="0 0 24 24"><path d="M4 6h16v10H10l-5 4v-4H4z"/></svg>',
+  kit:'<svg viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4l-6 4z"/></svg>',
+  sos:'<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
+  later:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
+};
+SC.map = function(){
+  var t=[
+    ['library','var(--yellow)','Activities','9 short exercises',IC.acts],
+    ['resources','var(--sky)','Read and watch','Trusted guides and videos',IC.res],
+    ['buddyIntro','var(--pink)','Meet someone','A student with similar interests',IC.buddy],
+    ['workshops','var(--lilac)','Workshops','Counsellor-led sessions',IC.ws],
+    ['couns','#C6E58A','Talk to a counsellor','You choose what to share',IC.couns],
+    ['toolkit','var(--card)','My toolkit','What you’ve saved',IC.kit]
+  ];
+  return {bg:'paper', html:'<h1>Here’s what’s here</h1><div class="tiles">'+t.map(function(x,n){ return '<button class="mt" data-act="go" data-to="'+x[0]+'" style="background:'+x[1]+';animation-delay:'+(n*.05)+'s">'+x[4]+'<span><b>'+x[2]+'</b><br><small>'+x[3]+'</small></span></button>'; }).join('')+
+    '<button class="mt wide" data-act="go" data-to="urgent" style="background:var(--grey);animation-delay:.3s">'+IC.sos+'<span style="margin-left:12px"><b>Urgent help</b><br><small>Talk to someone right now</small></span></button></div>'+
+    '<div class="push"><button class="link" data-act="go" data-to="lock">See what happens two days later</button></div>'};
+};
+SC.know = function(){
+  var n=[['I want to calm down right now','act','breathe'],['My head is full of worries','act','park'],['I can’t get started on my work','act','steps'],['I can’t decide what to do','act','tree'],['I feel low and flat','act','menu'],['I feel lonely and want to meet people','go','buddyIntro'],['I’d like to talk to a counsellor','go','couns']];
+  return {bg:'yellow', html:'<h1>What do you need?</h1><div class="qopts">'+n.map(function(x,i){ return '<button class="need" style="animation-delay:'+(i*.04)+'s" data-act="'+(x[1]==='act'?'openAct':'go')+'" '+(x[1]==='act'?'data-v="'+x[2]+'"':'data-to="'+x[2]+'"')+'>'+x[0]+'</button>'; }).join('')+'</div><div class="push"><button class="link" data-act="go" data-to="urgent">I need help right now</button></div>'};
+};
+
+/* ---------- activity library ---------- */
+SC.library = function(){
+  return {bg:'paper', html:'<h1>Activities</h1><p class="sub">Short exercises with a basis in research. Each one takes a few minutes and you can stop any time.</p><div class="lib">'+ACTS.map(function(a,i){ return '<button class="lcard" data-act="openAct" data-v="'+a.id+'" style="background:'+a.col+';animation-delay:'+(i*.05)+'s"><span class="mini">'+ILL[a.id]+'</span><b>'+a.name+'</b><small>'+a.tag+' · '+a.mins+'</small></button>'; }).join('')+'</div>'};
+};
+SC.act = function(){
+  var a=A(S.p.id);
+  return {bg:a.bg, html:'<div class="pic big" style="background:rgba(255,255,255,.45)">'+ILL[a.id]+'</div><span class="kicker">'+a.tag+'</span><h1 style="font-size:28px">'+a.name+'</h1><div class="meta"><span>'+a.mins+'</span><span>Helps with: '+a.for+'</span></div><p>'+a.why+'</p><details class="evid"><summary>Why this one</summary>'+a.ev+'</details><div class="push">'+pill('Start','startAct',{v:a.id})+'</div>'};
+};
+
+/* --- PMR --- */
+var PMR=[['Hands','Gently make a fist.'],['Arms','Gently tense your arms.'],['Shoulders','Raise your shoulders a little towards your ears.'],['Face','Gently scrunch your face, without straining.'],['Legs and feet','Press your feet into the floor.']];
+SC.pmr = function(){
+  var r=S.r, i=r.i||0;
+  if(r.done) return {bg:'pink', amb:true, html:'<h1>Notice how your body feels now</h1><div class="pmr-wrap release"><div class="halo"></div><div class="pmr-me">'+meStill()+'</div></div><p class="hint" style="font-size:15px">There’s no need to force anything. Take a moment before getting up.</p><div class="push">'+pill('Finish','actDone')+'</div>'};
+  var parts='<div class="parts">'+PMR.map(function(p,n){ return '<i class="'+(n===i?'on':(n<i?'done':''))+'">'+p[0]+'</i>'; }).join('')+'</div>';
+  return {bg:'pink', amb:true, html:'<h1 style="font-size:26px">'+PMR[i][0]+'</h1>'+parts+'<div class="pmr-wrap" id="pw"><div class="halo"></div><div class="pmr-me">'+meStill()+'</div></div><div class="bigword" id="pword" aria-live="polite">'+PMR[i][1]+'</div><div class="meter"><i id="pmeter"></i></div><div class="push">'+pill('Skip this part','pmrSkip',{cls:'ghost'})+link('Stop here','actStop')+'</div>', after:pmrRun};
+};
+function pmrRun(){
+  var pw=document.getElementById('pw'), w=document.getElementById('pword'), m=document.getElementById('pmeter'); if(!pw) return;
+  later(function(){ if(!document.getElementById('pw')) return; pw.className='pmr-wrap tense'; w.textContent='Tense… hold'; hum(4); m.style.transition='width 4s linear'; m.style.width='40%'; },1200);
+  later(function(){ if(!document.getElementById('pw')) return; pw.className='pmr-wrap release'; w.textContent='Release. Notice the difference.'; chime(392,4,.08); m.style.transition='width 6s linear'; m.style.width='100%'; },5200);
+  later(function(){ pmrNext(); },11200);
+}
+function pmrNext(){ var r=S.r; r.i=(r.i||0)+1; if(r.i>=PMR.length){ r.done=true; arp([392,493.88,587.33]); } rerender(true); }
+
+/* --- WHO grounding --- */
+var GR=[
+ {t:'Notice your feet', s:'If you can, put your feet flat on the floor. Gently press them down and notice the pressure.', n:0},
+ {t:'Notice 5 things you can see', s:'Look around slowly. Tap a circle for each thing. Notice its colour, shape or position.', n:5, ic:'<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7s10 7 10 7s-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'},
+ {t:'Notice 3 things you can feel', s:'Maybe your clothes, the chair holding you, or your hands resting together.', n:3, ic:'<svg viewBox="0 0 24 24"><path d="M8 13V5a2 2 0 0 1 4 0v6M12 11V4a2 2 0 0 1 4 0v8M16 12V7a2 2 0 0 1 4 0v7a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3l-3-5a2 2 0 0 1 3-2l2 2"/></svg>'},
+ {t:'Listen for 2 sounds', s:'They can be close by or far away.', n:2, ic:'<svg viewBox="0 0 24 24"><path d="M6 15a6 6 0 1 1 10.5-4c0 3-3 3.5-3 6a3 3 0 0 1-5 2"/></svg>'},
+ {t:'Come back to now', s:'Take a moment to notice where you are, and what you were doing before this.', n:0}
+];
+var PENTA=[523.25,587.33,659.25,783.99,880];
+SC.ground = function(){
+  var r=S.r, i=r.i||0, g=GR[i], got=r.got||0;
+  var dots='<div class="stepdots">'+GR.map(function(_,n){return '<i class="'+(n===i?'on':(n<i?'done':''))+'"></i>';}).join('')+'</div>';
+  var body;
+  if(i===0) body='<div class="feet"><div class="foot"></div><div class="foot"></div></div><div class="floor"></div>';
+  else if(g.n) body='<div class="senses">'+Array.apply(null,{length:g.n}).map(function(_,n){ var cols=['#F7C3D6','#BFE3F5','#FFE27A','#fff','#DCD0F8']; return '<button class="sense '+(n<got?'on':'')+'" data-act="sense" style="'+(n<got?'background:'+cols[n%5]:'')+'" aria-label="Noticed '+(n+1)+'">'+(n<got?g.ic:(n+1))+'</button>'; }).join('')+'</div><p class="hint">'+got+' of '+g.n+'</p>';
+  else body='<div class="ground"><span class="rip"></span><span class="rip"></span><span class="rip"></span><div class="core">'+meStill()+'</div></div>';
+  var ready = !g.n || got>=g.n;
+  return {bg:'lime', amb:true, html:dots+'<h1 style="font-size:26px">'+g.t+'</h1><p>'+g.s+'</p>'+body+'<div class="push">'+pill(i===GR.length-1?'Finish':'Next','grNext',{dis:!ready})+link('Stop here','actStop')+'</div>'};
+};
+
+/* --- worry parking lot --- */
+var WSUG=['I have an exam next week.','I don’t know whether I’ll get placed.','I’m worried my friend is upset with me.','I haven’t called home in a while.'];
+var BAYS=[['now','Act now'],['later','Act later'],['wait','Can’t solve now']];
+var CARC=['#F7C3D6','#FFE27A','#BFE3F5','#C6E58A','#FFC79A'];
+function lotHTML(newIdx){
+  var w=S.r.w||[], counts={now:0,later:0,wait:0}, tot={now:0,later:0,wait:0}, waitN=0, h=''; w.forEach(function(x){ if(x.bay) tot[x.bay]++; });
+  w.forEach(function(x,n){
+    var col=CARC[n%5], st='';
+    if(x.bay){ var b=['now','later','wait'].indexOf(x.bay), k=counts[x.bay]++; var left=b*33.33, x0=(b*104)+20, top=110-k*Math.min(40,106/Math.max(tot[x.bay]-1,1)); st='left:calc('+left+'% + 21px);top:'+top+'px;';
+      var fx=(150-x0-29)+'px', fy=(-top-40)+'px'; st+='--fx:'+fx+';--fy:'+fy+';--fr:'+(b===0?'-14deg':(b===2?'14deg':'0deg'))+';';
+      h+='<span class="car '+(n===newIdx?'new':'')+'" style="background:'+col+';'+st+'">'+(n+1)+'</span>';
+    } else { h+='<span class="car wait" style="background:'+col+';left:'+(14+(waitN%5)*64)+'px;top:'+(-4+Math.floor(waitN/5)*34)+'px;transform-origin:center;opacity:.95;animation-delay:'+(waitN*.2)+'s">'+(n+1)+'</span>'; waitN++; }
+  });
+  return '<div class="lot" aria-hidden="true"><span class="bay" style="left:0"></span><span class="bay" style="left:33.33%"></span><span class="bay" style="left:66.66%"></span>'+BAYS.map(function(b,n){return '<span class="lab" style="left:'+(n*33.33)+'%">'+b[1]+'</span>';}).join('')+'<div style="position:absolute;inset:0;top:20px">'+h+'</div></div>';
+}
+SC.park = function(newIdx){
+  var r=S.r; r.w=r.w||[]; var st=r.st||0;
+  if(st===0){
+    var sug=WSUG.filter(function(s){ return !r.w.some(function(x){return x.t===s;}); });
+    return {bg:'lilac', amb:true, html:'<h1 style="font-size:26px">What’s on your mind?</h1><p class="sub">Add each worry. You don’t need to solve anything yet.</p>'+lotHTML()+
+      '<div class="row"><input class="field" id="wIn" maxlength="70" placeholder="Type a worry…" aria-label="A worry"><button class="sq" data-act="wAdd" aria-label="Add">+</button></div>'+
+      (sug.length?'<div class="chips-row">'+sug.map(function(s){return '<button class="chip" data-act="wSug" data-v="'+esc(s)+'">'+s+'</button>';}).join('')+'</div>':'')+
+      '<div class="push">'+pill('Park them','wPark',{dis:!r.w.length})+link('Stop here','actStop')+'</div>'};
+  }
+  if(st===1){
+    var all=r.w.every(function(x){return x.bay;});
+    return {bg:'lilac', amb:true, html:'<h1 style="font-size:26px">Where does each one go?</h1>'+lotHTML(r.newIdx)+r.w.map(function(x,n){ return '<div class="worry" style="animation-delay:'+(n*.05)+'s"><p><span class="num" style="background:'+CARC[n%5]+'">'+(n+1)+'</span><span data-notr>'+esc(x.t)+'</span></p><div class="bays">'+BAYS.map(function(b){ return '<button class="chip '+(x.bay===b[0]?'on':'')+'" data-act="wBay" data-v="'+n+':'+b[0]+'">'+b[1]+'</button>'; }).join('')+'</div></div>'; }).join('')+'<div class="push">'+pill('Next','wNext',{dis:!all})+'</div>'};
+  }
+  var acts=r.w.filter(function(x){return x.bay==='now';});
+  if(st===2){
+    var ideas = acts.length ? ['Open my notes and pick one topic','Send one message','Write down what I already know','Check the official placement page'] : [];
+    return {bg:'lilac', amb:true, html:'<h1 style="font-size:26px">'+(acts.length?'One thing for the next 10 minutes':'When will you come back to these?')+'</h1>'+lotHTML()+
+      (acts.length?'<p class="sub">For “<span data-notr>'+esc(acts[0].t)+'</span>”</p><div class="qopts">'+ideas.map(function(t){return '<button class="qopt '+(r.pick===t?'on':'')+'" data-act="wPick" data-v="'+esc(t)+'">'+t+'</button>';}).join('')+'</div>'
+        :'<div class="qopts">'+['Today at 6 pm','Tomorrow at 6 pm','Before my next class'].map(function(t){return '<button class="qopt '+(r.pick===t?'on':'')+'" data-act="wPick" data-v="'+t+'">'+t+'</button>';}).join('')+'</div>')+
+      '<div class="push">'+pill('Done','wDone',{dis:!r.pick})+'</div>'};
+  }
+  return {bg:'lilac', amb:true, html:'<h1 style="font-size:26px">We’ve parked these worries for now</h1>'+lotHTML()+'<div class="panel"><span class="kicker">Your next step</span><h2>'+esc(r.pick)+'</h2><p class="why">The other worries will wait in the lot. When one comes back, remind yourself: “I’ve written this down. I’ll come back to it at the time I chose.”</p></div><div class="push">'+pill('Finish','actDone')+'</div>'};
+};
+
+/* --- activity menu (behavioural activation) --- */
+var MENU={
+  Pleasure:['Listen to a favourite song','Watch a short comedy clip','Make a favourite drink'],
+  Achievement:['Organise one shelf','Do one small assignment task','Reply to one pending message'],
+  Connection:['Message someone','Sit with a friend','Call home'],
+  'Physical care':['Eat something','Have a shower','Stretch for a bit','Step outside']
+};
+var MDESC={Pleasure:'Something you enjoy',Achievement:'A small win',Connection:'Time with someone','Physical care':'Look after your body'};
+var MCOL={Pleasure:'var(--pink)',Achievement:'var(--sky)',Connection:'#C6E58A','Physical care':'var(--card)'};
+SC.menu = function(){
+  var r=S.r, st=r.st||0;
+  if(st===0) return {bg:'yellow', amb:true, html:'<h1 style="font-size:26px">Which kind of thing might help today?</h1><div class="cats">'+Object.keys(MENU).map(function(c,i){ return '<button class="cat '+(r.cat===c?'on':'')+'" data-act="mCat" data-v="'+c+'" style="background:'+MCOL[c]+';animation-delay:'+(i*.05)+'s"><b>'+c+'</b><small>'+MDESC[c]+'</small></button>'; }).join('')+'</div>'+
+    (r.cat?'<p class="sec">Which one feels least difficult to try right now?</p><div class="qopts">'+MENU[r.cat].map(function(t){ return '<button class="qopt '+(r.item===t?'on':'')+'" data-act="mItem" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div>':'')+
+    '<div class="push">'+pill('Next','mNext',{dis:!r.item})+link('Stop here','actStop')+'</div>'};
+  if(st===1) return {bg:'yellow', amb:true, html:'<h1 style="font-size:26px">How long?</h1><p>'+r.item+'</p><div class="dur">'+[2,5,15].map(function(m){ return '<button class="'+(r.min===m?'on':'')+'" data-act="mMin" data-v="'+m+'"><b>'+m+'</b>min</button>'; }).join('')+'</div><p class="why">If it feels hard, pick the shortest. You can always do more.</p><div class="push">'+pill('Start the timer','mStart',{dis:!r.min})+'</div>'};
+  if(st===2){ var s=r.min*60; return {bg:'yellow', amb:true, html:'<h1 style="font-size:24px">'+r.item+'</h1><div class="tring"><svg viewBox="0 0 250 250"><circle class="track" cx="125" cy="125" r="118"/><circle class="prog" id="tprog" cx="125" cy="125" r="118"/></svg><span class="t" id="tt">'+fmt(s)+'</span><span class="me">'+meStill()+'</span></div><p class="hint">'+(SND.on?'Keep this screen open. We’ll chime when it’s time.':'Keep this screen open. Turn sound on (top right) if you’d like a chime.')+'</p><div class="push">'+pill('I’ve done it','mEnd')+link('Stop here','actStop')+'</div>', after:mTimer}; }
+  return {bg:'yellow', amb:true, html:'<h1 style="font-size:26px">How did that feel?</h1><div class="qopts">'+['A bit better','About the same','Harder than I thought'].map(function(t){ return '<button class="qopt '+(r.felt===t?'on':'')+'" data-act="mFelt" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div><p class="sec">Would you do it again?</p><div class="choices">'+['Yes','Maybe','No'].map(function(t){ return '<button class="chip '+(r.again===t?'on':'')+'" data-act="mAgain" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Finish','actDone',{dis:!r.felt})+'</div>'};
+};
+function tSave(){ var r=S.r, ta=document.getElementById('tIn'); if(ta) r.dec=ta.value.trim()||TEX[0];
+  phone.querySelectorAll('[data-opt]').forEach(function(el){ var v=el.value.trim(); if(v) r.opts[+el.dataset.opt]=v; });
+  phone.querySelectorAll('[data-know]').forEach(function(el){ r.know[+el.dataset.know]=el.value.trim(); });
+  phone.querySelectorAll('[data-find]').forEach(function(el){ r.find[+el.dataset.find]=el.value.trim(); }); }
+function fmt(s){ return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
+function mTimer(){ var total=S.r.min*60, end=Date.now()+total*1000, pr=document.getElementById('tprog'), tt=document.getElementById('tt');
+  function tick(){ if(!document.getElementById('tt')) return; var left=Math.max(0,Math.ceil((end-Date.now())/1000)); tt.textContent=fmt(left); pr.style.strokeDashoffset=String(741*(left/total)); if(left<=0){ arp([523.25,659.25,783.99]); S.r.st=3; later(function(){ rerender(true); },1200); return; } later(tick,250); }
+  later(tick,250); }
+
+/* --- coping card --- */
+var CP=[
+ {q:'What do you usually tell yourself when things go wrong?', o:['I always mess things up.','I should be doing better by now.','Everyone else has it figured out.'], k:'critic'},
+ {q:'What would you tell a friend in the same situation?', o:['You’re doing your best with a lot going on.','One bad day doesn’t decide everything.','It’s okay to ask for help.'], k:'friend'},
+ {q:'What’s one realistic reminder you need right now?', o:['I don’t have to solve everything today.','I can take one step, ask for help, and work through the rest gradually.','Rest is part of the work.'], k:'remind'}
+];
+var CCOL=['#FFE27A','#F7C3D6','#BFE3F5','#DCD0F8','#C6E58A'];
+SC.cope = function(){
+  var r=S.r, st=r.st||0;
+  if(st<3){ var c=CP[st], val=r[c.k]||'';
+    return {bg:'peach', amb:true, html:'<div class="stepdots">'+[0,1,2,3].map(function(n){return '<i class="'+(n===st?'on':(n<st?'done':''))+'"></i>';}).join('')+'</div><h1 style="font-size:24px">'+c.q+'</h1><div class="qopts">'+c.o.map(function(t){ return '<button class="qopt '+(val===t?'on':'')+'" data-act="cPick" data-v="'+esc(t)+'">'+t+'</button>'; }).join('')+'</div><textarea class="field" id="cIn" maxlength="120" placeholder="Or write your own…">'+(c.o.indexOf(val)>-1?'':esc(val))+'</textarea>'+(st===0?'<p class="why">This one stays on your phone. It only helps you notice the voice you use with yourself.</p>':'')+'<div class="push">'+pill('Next','cNext')+link('Stop here','actStop')+'</div>'}; }
+  var col=r.col||CCOL[0];
+  return {bg:'peach', amb:true, html:'<h1 style="font-size:24px">Your coping card</h1><div class="cc-stage" id="ccs" style="position:relative"><div class="cc '+(r.built?'':'build ')+(r.flip?'flip':'')+'" id="cc"><div class="face" style="background:'+col+'"><small>Remember</small><q data-notr>'+esc(r.remind||CP[2].o[0])+'</q><small style="align-self:flex-end">Tap to turn over</small></div><div class="face face-b" style="background:#fff"><small>What I’d tell a friend</small><q data-notr>'+esc(r.friend||CP[1].o[1])+'</q><small style="align-self:flex-end">Campus Guide</small></div></div></div><div class="swatches">'+CCOL.map(function(c){ return '<button class="'+(col===c?'on':'')+'" style="background:'+c+'" data-act="cCol" data-v="'+c+'" aria-label="Card colour"></button>'; }).join('')+'</div><div class="push">'+pill(r.saved?'Saved to your toolkit':'Save to my toolkit','cSave',{dis:r.saved})+(r.saved?pill('Finish','actDone',{cls:'ghost'}):link('Not now','actDone'))+'</div>', after:function(){ later(function(){ r.built=true; },800); }};
+};
+function sparkle(el){ var b=el.getBoundingClientRect(), p=phone.getBoundingClientRect(); for(var i=0;i<16;i++){ var s=document.createElement('span'); s.className='spark'; var a=Math.random()*Math.PI*2, d=60+Math.random()*80; s.style.left=(b.left-p.left+b.width/2)+'px'; s.style.top=(b.top-p.top+b.height/2)+'px'; s.style.background=['#7B61FF','#FFE27A','#fff','#F7C3D6'][i%4]; s.style.setProperty('--sx',Math.cos(a)*d+'px'); s.style.setProperty('--sy',Math.sin(a)*d+'px'); phone.appendChild(s); setTimeout(function(x){ return function(){ x.remove(); }; }(s),950); } }
+
+/* --- situation, feeling, need --- */
+var FEEL=['Hurt','Angry','Sad','Disappointed','Confused','Guilty','Worried'];
+var NEED=['Clarity','Some space','To be heard','An apology','Rest','Support'];
+var NEXT5=['Talk to the person','Set a boundary','Take some space','Ask someone I trust for advice','Do nothing for now'];
+SC.sfn = function(){
+  var r=S.r, st=r.st||0; r.f=r.f||[]; r.n=r.n||[]; if(r.priv===undefined) r.priv=true;
+  var dots='<div class="stepdots">'+[0,1,2,3].map(function(n){return '<i class="'+(n===st?'on':(n<st?'done':''))+'"></i>';}).join('')+'</div>';
+  if(st===0) return {bg:'mist', amb:true, html:dots+'<h1 style="font-size:26px">What happened?</h1><p class="sub">One or two sentences. Try to stick to what was said or done, not what you think they meant.</p><textarea class="field" id="sIn" maxlength="200" placeholder="My friend cancelled our plans again.">'+esc(r.what||'')+'</textarea><button class="switch" data-act="sPriv" aria-pressed="'+r.priv+'"><span>Keep this private<br><small style="color:var(--muted)">It stays on your phone and isn’t sent to the guide</small></span><i></i></button><div class="push">'+pill('Next','sNext')+link('Stop here','actStop')+'</div>'};
+  if(st===1) return {bg:'mist', amb:true, html:dots+'<h1 style="font-size:26px">How did you feel?</h1><p class="sub">Pick any that fit.</p><div class="choices">'+FEEL.map(function(f){ return '<button class="chip '+(r.f.indexOf(f)>-1?'on':'')+'" data-act="sF" data-v="'+f+'">'+f+'</button>'; }).join('')+'</div><div class="push">'+pill('Next','sNext',{dis:!r.f.length})+'</div>'};
+  if(st===2) return {bg:'mist', amb:true, html:dots+'<h1 style="font-size:26px">What do you need?</h1><div class="choices">'+NEED.map(function(f){ return '<button class="chip '+(r.n.indexOf(f)>-1?'on':'')+'" data-act="sN" data-v="'+f+'">'+f+'</button>'; }).join('')+'</div><div class="push">'+pill('Next','sNext',{dis:!r.n.length})+'</div>'};
+  if(st===3) return {bg:'mist', amb:true, html:dots+'<div class="box3"><div class="b"><small>What happened</small><p'+(r.what?' data-notr':'')+'>'+(r.what?esc(r.what):'I’d rather not say')+'</p></div><div class="b" style="animation-delay:.1s"><small>How I felt</small><p>'+r.f.join(', ')+'</p></div><div class="b" style="animation-delay:.2s"><small>What I need</small><p>'+r.n.join(', ')+'</p></div></div><p class="sec">What feels most useful right now?</p><div class="qopts">'+NEXT5.map(function(t){ return '<button class="qopt '+(r.next===t?'on':'')+'" data-act="sNx" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Next','sNext',{dis:!r.next})+'</div>'};
+  var talk=r.next==='Talk to the person';
+  return {bg:'mist', amb:true, html:'<h1 style="font-size:26px">'+(talk?'Something you could say':'That’s a real choice')+'</h1>'+(talk?'<div class="draft" data-notr>When '+esc((r.what||'this happens').replace(/\.$/,'').replace(/^My /,'my '))+', I feel '+r.f[0].toLowerCase()+'. I’d appreciate '+({'Clarity':'knowing where we stand','Some space':'some time to think','To be heard':'a chance to talk about it','An apology':'you acknowledging it','Rest':'some time to rest','Support':'your support'}[r.n[0]])+'.</div><p class="why">You don’t have to send it. You can edit it, keep it, or leave it.</p>':'<p>You don’t have to resolve this today. Knowing what you need is already useful.</p>')+'<div class="push">'+pill('Finish','actDone')+'</div>'};
+};
+
+/* --- break it down (problem solving) --- */
+var MAIN=['An upcoming exam','An assignment deadline','Lots of pending tasks','Falling behind in lectures','Fear of getting poor marks'];
+var STEPS5=['Open the lecture notes','Find the topics in Chapter 2','Study the first topic for 20 minutes','Try three practice questions','Mark what still needs revising'];
+SC.steps = function(){
+  var r=S.r, st=r.st||0;
+  var dots='<div class="stepdots">'+[0,1,2,3,4].map(function(n){return '<i class="'+(n===st?'on':(n<st?'done':''))+'"></i>';}).join('')+'</div>';
+  if(st===0) return {bg:'white', amb:true, html:dots+'<h1 style="font-size:26px">Which one is creating the most pressure?</h1><div class="qopts">'+MAIN.map(function(t){ return '<button class="qopt '+(r.main===t?'on':'')+'" data-act="bMain" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Next','bNext',{dis:!r.main})+link('Stop here','actStop')+'</div>'};
+  if(st===1) return {bg:'white', amb:true, html:dots+'<h1 style="font-size:26px">Make it specific</h1><p class="sub">Instead of “I have too much to study”, try something like this:</p><textarea class="field" id="bIn" maxlength="160">'+esc(r.spec||'I have three chapters to revise before Friday and haven’t started Chapter 2.')+'</textarea><div class="push">'+pill('Next','bNext')+'</div>'};
+  if(st===2){ return {bg:'white', amb:true, html:dots+'<h1 style="font-size:26px">Smaller steps</h1><div class="stairs">'+[0,1,2,3,4].map(function(n){ return '<span class="s" style="left:'+(n*20+1)+'%;width:18%;height:'+(26+n*24)+'px;animation-delay:'+(n*.12)+'s;opacity:'+(1-n*0.12)+'"></span>'; }).join('')+'<span class="hop" id="hop" style="left:calc(9% - 11px);bottom:34px"></span></div><p class="sub">Which one can you realistically start with today?</p><div class="steps">'+STEPS5.map(function(t,n){ return '<button class="step '+(r.first===n?'on':'')+'" data-act="bFirst" data-v="'+n+'" style="animation-delay:'+(n*.06)+'s"><span class="n">'+(n+1)+'</span>'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Next','bNext',{dis:r.first===undefined})+'</div>', after:function(){ if(r.first!==undefined){ var h=document.getElementById('hop'); if(h){ h.style.left='calc(9% - 11px)'; h.style.bottom='34px'; void h.offsetWidth; h.style.left='calc('+(r.first*20+9)+'% - 11px)'; h.style.bottom=(34+r.first*24)+'px'; } } }}; }
+  if(st===3){ r.time=r.time||null; r.place=r.place||null; r.dur=r.dur||null;
+    var blank=function(v,l){ return '<span class="blank">'+(v||l)+'</span>'; };
+    return {bg:'white', amb:true, html:dots+'<h1 style="font-size:26px">Make a start plan</h1><div class="plan">At '+blank(r.time,'when')+', in '+blank(r.place,'where')+', I will '+blank((r.small?'open the notes and find the first topic':STEPS5[r.first].toLowerCase()),'')+' for '+blank(r.dur,'how long')+'.</div><p class="sec">When</p><div class="pickrow">'+['after lunch','4 pm','8 pm tonight'].map(function(t){return '<button class="chip '+(r.time===t?'on':'')+'" data-act="bSet" data-v="time:'+t+'">'+t+'</button>';}).join('')+'</div><p class="sec">Where</p><div class="pickrow">'+['the library','my room','a café'].map(function(t){return '<button class="chip '+(r.place===t?'on':'')+'" data-act="bSet" data-v="place:'+t+'">'+t+'</button>';}).join('')+'</div><p class="sec">How long</p><div class="pickrow">'+['5 minutes','10 minutes','20 minutes'].map(function(t){return '<button class="chip '+(r.dur===t?'on':'')+'" data-act="bSet" data-v="dur:'+t+'">'+t+'</button>';}).join('')+'</div><div class="push">'+pill('Next','bNext',{dis:!(r.time&&r.place&&r.dur)})+'</div>'}; }
+  if(st===4) return {bg:'white', amb:true, html:dots+'<h1 style="font-size:26px">Does this plan feel manageable?</h1><div class="plan">At <b>'+r.time+'</b>, in <b>'+r.place+'</b>, I will <b>'+(r.small?'open the notes and find the first topic':STEPS5[r.first].toLowerCase())+'</b> for <b>'+r.dur+'</b>.</div><p class="why">Keep your notes ready before you start. You only need to do the first step, not the whole task.</p><div class="push">'+pill('Yes, it’s manageable','bYes')+pill('No, make it smaller','bSmall',{cls:'ghost'})+'</div>'};
+  return {bg:'white', amb:true, html:'<h1 style="font-size:26px">Your first step is clear</h1><div class="plan">At <b>'+r.time+'</b>, in <b>'+r.place+'</b>, I will <b>'+(r.small?'open the notes and find the first topic':STEPS5[r.first].toLowerCase())+'</b> for <b>'+r.dur+'</b>.</div><p>Come back after you try it and we can look at what worked.</p><div class="push">'+pill('Set a reminder','bRem',{cls:'ghost'})+pill('Finish','actDone')+'</div>'};
+};
+
+/* --- the decision tree (structured problem-solving) --- */
+var TEX=['I don\u2019t know whether to apply for internships or focus on my upcoming exams.','Which elective should I choose next semester?','Should I talk to my roommate about the noise, or let it go?'];
+var TDEF={'Apply for internships':{know:'Applications close in about three weeks.',find:'How much time each application really takes.',acts:['Shortlist three internships and note their deadlines','Ask a senior how long their applications took']},
+ 'Focus on my exams':{know:'My exams start in two weeks.',find:'Which subjects need the most work.',acts:['Check the exam timetable and syllabus','List the topics I feel least sure about']},
+ 'The elective I enjoy':{know:'I liked the intro course a lot.',find:'What the workload and grading look like.',acts:['Read last year’s course outline','Ask someone who took it']},
+ 'The one that helps placements':{know:'Recruiters ask about this skill.',find:'Whether it really matters for the roles I want.',acts:['Check three job listings for this skill','Ask the placement office']},
+ 'Talk to my roommate':{know:'The noise is late at night, most weekdays.',find:'Whether they even realise it bothers me.',acts:['Practise what I’d say first','Pick a calm time to bring it up']},
+ 'Let it go for now':{know:'I can use earplugs for now.',find:'How long I can manage like this.',acts:['Try earplugs for three nights','Notice how my sleep feels after a week']},
+ 'A bit of both':{know:'',find:'Whether I can fit both into a week.',acts:['Block two evenings for applications this week','Draft a realistic week plan']}};
+var THELP=['Knowing the exact deadlines','Talking to the placement office','Asking a senior who\u2019s done it','How much time each one takes','What matters most to me right now'];
+var TCOL=['var(--pink)','var(--sky)','var(--yellow)'];
+function tdef(o,k){ return (TDEF[o]&&TDEF[o][k])||(k==='acts'?['Ask someone who\u2019s been through this','Write down what I\u2019d need to start']:''); }
+SC.tree = function(){
+  var r=S.r, st=r.st||0;
+  if(!r.opts) r.opts=['Apply for internships','Focus on my exams'];
+  r.know=r.know||{}; r.find=r.find||{}; r.act=r.act||{}; r.help=r.help||[];
+  var dots='<div class="stepdots">'+[0,1,2,3,4].map(function(n){return '<i class="'+(n===st?'on':(n<st?'done':''))+'"></i>';}).join('')+'</div>';
+  if(st===0) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What are you deciding?</h1><p class="sub">Write it as a question, in your own words.</p><textarea class="field" id="tIn" maxlength="160">'+esc(r.dec||TEX[0])+'</textarea><p class="sec">Or start from an example</p><div class="qopts">'+TEX.slice(1).map(function(t){ return '<button class="qopt" data-act="tEx" data-v="'+esc(t)+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Next','tNext')+link('Stop here','actStop')+'</div>'};
+  if(st===1) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What are your realistic options?</h1><p class="sub">Two or three is enough.</p>'+r.opts.map(function(o,i){ return '<div class="row"><span class="tdot" style="background:'+TCOL[i]+'">'+String.fromCharCode(65+i)+'</span><input class="field" data-opt="'+i+'" maxlength="40" value="'+esc(o)+'" aria-label="Option '+String.fromCharCode(65+i)+'"></div>'; }).join('')+(r.opts.length<3?'<button class="pill ghost" data-act="tAdd">Add a third option</button>':'')+'<div class="push">'+pill('Next','tNext')+'</div>'};
+  if(st===2) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What do you know, and what do you still need to find out?</h1>'+r.opts.map(function(o,i){ return '<div class="panel tpanel" style="border-top:6px solid '+TCOL[i]+';animation-delay:'+(i*.06)+'s"><h2 data-notr>'+esc(o)+'</h2><label class="sec">I know</label><input class="field" data-know="'+i+'" maxlength="80" value="'+esc(r.know[i]!==undefined?r.know[i]:tdef(o,'know'))+'" placeholder="Something you\u2019re sure of"><label class="sec">I need to find out</label><input class="field" data-find="'+i+'" maxlength="80" value="'+esc(r.find[i]!==undefined?r.find[i]:tdef(o,'find'))+'" placeholder="Something you\u2019re unsure of"></div>'; }).join('')+'<div class="push">'+pill('Next','tNext')+'</div>'};
+  if(st===3){ var ready=r.opts.every(function(_,i){ return r.act[i]; });
+    return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">One small step for each option</h1><p class="sub">Something you could do this week, whichever way you go.</p>'+r.opts.map(function(o,i){ return '<div class="panel tpanel" style="border-top:6px solid '+TCOL[i]+';animation-delay:'+(i*.06)+'s"><h2 data-notr>'+esc(o)+'</h2><div class="qopts">'+tdef(o,'acts').map(function(t){ return '<button class="qopt '+(r.act[i]===t?'on':'')+'" data-act="tAct" data-v="'+i+'|'+esc(t)+'">'+t+'</button>'; }).join('')+'</div></div>'; }).join('')+'<div class="push">'+pill('Next','tNext',{dis:!ready})+'</div>'}; }
+  if(st===4) return {bg:'stage', amb:true, html:dots+'<h1 style="font-size:26px">What would help you choose?</h1><p class="sub">Pick any that fit.</p><div class="qopts">'+THELP.map(function(t){ return '<button class="qopt '+(r.help.indexOf(t)>-1?'on':'')+'" data-act="tHelp" data-v="'+esc(t)+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Draw my tree','tNext',{dis:!r.help.length})+'</div>'};
+  var n=r.opts.length;
+  var paths=r.opts.map(function(_,i){ var x=(i+0.5)*(300/n); return '<path class="tbranch" style="animation-delay:'+(.2+i*.15)+'s" d="M150 0V14Q150 26 '+x+' 30V44"/>'; }).join('');
+  var cols=r.opts.map(function(o,i){ return '<div class="tcol" style="animation-delay:'+(.5+i*.15)+'s"><div class="tnode" data-notr style="background:'+TCOL[i]+'">'+esc(o)+'</div>'+(r.know[i]?'<div class="tleaf"><small>Know</small><span data-notr>'+esc(r.know[i])+'</span></div>':'')+(r.find[i]?'<div class="tleaf"><small>Find out</small><span data-notr>'+esc(r.find[i])+'</span></div>':'')+'<div class="tleaf nx"><small>Next step</small>'+esc(r.act[i])+'</div></div>'; }).join('');
+  return {bg:'stage', amb:true, html:'<h1 style="font-size:24px">Your decision tree</h1><div class="troot" data-notr>'+esc(r.dec||TEX[0])+'</div><svg class="tsvg" viewBox="0 0 300 44" preserveAspectRatio="none" aria-hidden="true">'+paths+'</svg><div class="tcols" style="grid-template-columns:repeat('+n+',1fr)">'+cols+'</div><div class="panel"><span class="kicker">What would help you choose</span><p>'+r.help.map(esc).join(' \u00b7 ')+'</p><p class="why">There\u2019s no right answer here. The tree is yours to come back to once you know more.</p></div><div class="push">'+pill('Finish','actDone')+'</div>', after:function(){ arp([392,523.25,659.25],.15); }};
+};
+
+/* ---------- shared check-in after an activity (IMP doc section 6) ---------- */
+var FB=[
+ ['helped','It helped','I’m glad it was useful. Would you like to keep this activity for another time?'],
+ ['little','It helped a little','Would you like to try one more round, or finish here?'],
+ ['none','It didn’t make a difference','That’s okay. Different techniques work differently for different people. I can offer another approach, or help you reach a counsellor.'],
+ ['uncomf','It made me uncomfortable','Let’s stop here. You don’t need to continue. Would you prefer a different activity or a person to talk to?'],
+ ['stop','I don’t want to continue','Of course. We can stop here. You can come back whenever you want, or ask for a counsellor.']
+];
+var CHATACK={helped:'I’m glad it helped. It’s saved for whenever you need it.',little:'Glad it helped a little. Small changes count.',none:'That’s okay. Breathing doesn’t work the same for everyone.',uncomf:'Let’s leave it there. You don’t need to do it again.',stop:'Of course. We can stop here.'};
+var ALT={breathe:'ground',pmr:'breathe',ground:'park',park:'steps',menu:'cope',cope:'sfn',sfn:'cope',steps:'tree',tree:'park'};
+SC.actCheck = function(){
+  var a=A(S.p.id), f=S.r.fb, fb=f?FB.filter(function(x){return x[0]===f;})[0]:null, nexts='';
+  if(fb){ S.lastFb=fb[1];
+    if(f==='helped') nexts=pill(S.toolkit.indexOf(a.id)>-1?'Saved to your toolkit':'Save to my toolkit','kitSave',{v:a.id,dis:S.toolkit.indexOf(a.id)>-1})+pill('More activities','go',{to:'library',cls:'ghost'});
+    else if(f==='little') nexts=pill('One more round','startAct',{v:a.id})+pill('Finish here','go',{to:'library',cls:'ghost'});
+    else if(f==='none') nexts=pill('Try: '+A(ALT[a.id]).name,'openAct',{v:ALT[a.id]})+pill('Talk to a counsellor','go',{to:'couns',cls:'ghost'});
+    else if(f==='uncomf') nexts=pill('Something else','go',{to:'library'})+pill('Talk to a person','go',{to:'couns',cls:'ghost'});
+    else nexts=pill('Back to what’s here','go',{to:'map'})+pill('Ask for a counsellor','go',{to:'couns',cls:'ghost'});
+  }
+  return {bg:'paper', html:'<span class="kicker">'+a.name+'</span><h1>How was that for you?</h1><div class="qopts">'+FB.map(function(x,i){ return '<button class="qopt '+(f===x[0]?'on':'')+'" data-act="fb" data-v="'+x[0]+'" style="animation-delay:'+(i*.04)+'s">'+x[1]+'</button>'; }).join('')+'</div>'+(fb?'<div class="reply-card"><span class="dot"></span><span>'+fb[2]+'</span></div>':'')+'<div class="push">'+nexts+'</div>'};
+};
+
+/* ---------- 7-question check ---------- */
+SC.q7 = function(){
+  var i=S.qi, q=Q7[i], a=S.q[i];
+  return {bg:'paper', html:'<div class="progress"><i style="width:'+((i+1)/7*100)+'%"></i></div><span class="kicker" data-curated>Understanding your experience · '+(i+1)+' of 7</span><h1 style="font-size:24px" data-curated>'+q.q+'</h1>'+(q.sub?'<p style="font-weight:500" data-curated>'+q.sub+'</p>':'')+'<p class="why" style="color:var(--muted)" data-curated>'+q.why+'</p><div class="qopts" data-curated>'+q.o.map(function(o,n){ return '<button class="qopt '+(a===n?'on':'')+'" data-act="qAns" data-v="'+n+'" style="animation-delay:'+(n*.04)+'s">'+o+'</button>'; }).join('')+'</div><div class="push">'+pill(i===6?'Continue':'Next','qNext',{dis:a===undefined})+(q.safety?'':link('Skip','qSkip'))+'</div>'};
+};
+SC.qtext = function(){ return {bg:'paper', html:'<span class="kicker">Optional</span><h1 style="font-size:24px">Would you like to tell us a little more?</h1><p class="sub">A few questions can’t capture everything. You can share what makes it better or worse, or anything else you feel is important.</p><textarea class="field" id="qtIn" maxlength="500" placeholder="Optional. Leave it empty if you like.">'+esc(S.qtext)+'</textarea><div class="push">'+pill('Continue','qtNext')+'</div>'}; };
+SC.prefs = function(){
+  var i=S.p.i||0, q=PREFS[i];
+  return {bg:'paper', html:'<div class="progress"><i style="width:'+((i+1)/3*100)+'%"></i></div><span class="kicker">What kind of support would help you? · '+(i+1)+' of 3</span><h1 style="font-size:24px">'+q.q+'</h1><p class="sub">Select all that apply.</p><div class="qopts">'+q.o.map(function(o,n){ return '<button class="qopt '+(S.pr[i].indexOf(n)>-1?'on':'')+'" data-act="prAns" data-v="'+n+'" style="animation-delay:'+(n*.04)+'s">'+o+'</button>'; }).join('')+'</div>'+(i===2?'<textarea class="field" id="prIn" maxlength="300" placeholder="Anything we should keep in mind? (optional)">'+esc(S.prNote)+'</textarea>':'')+'<div class="push">'+pill(i===2?'See my next step':'Next','prNext',{dis:!S.pr[i].length})+'</div>'};
+};
+function wantsHuman(){ return S.pr[0].indexOf(5)>-1 || S.pr[1].indexOf(2)>-1 || S.pr[2].indexOf(3)>-1; }
+function heavy(){ var s=(S.q[0]||0)+(S.q[3]||0)+(S.q[4]||0); return s>=8; }
+function wsFor(){ for(var i=0;i<WS.length;i++){ for(var j=0;j<S.plate.length;j++) if(WS[i].match.indexOf(S.plate[j])>-1) return WS[i]; } return WS[0]; }
+SC.next = function(){
+  var talk = heavy() || wantsHuman(), w=wsFor(), social = S.plate.indexOf('alone')>-1 || S.plate.indexOf('friends')>-1 || S.feelings.indexOf('foggy')>-1 || S.feelings.indexOf('heavy')>-1;
+  var main = talk ? '<div class="nextcard" style="background:var(--lilac)"><h2>Talking to someone could help</h2><p>A FLAME counsellor can go through this with you. You choose exactly what to share.</p>'+pill('Find a time','go',{to:'couns'})+'<span class="me">'+meStill()+'</span></div>'
+                  : '<div class="nextcard" style="background:#C6E58A"><h2>Here’s something to try</h2><p>A few short activities picked for what you shared. Come back any time.</p>'+pill('See activities','go',{to:'library'})+'<span class="me">'+meStill()+'</span></div>';
+  var opts=[];
+  if(talk) opts.push(['library','var(--yellow)',IC.acts,'Activities you can do now','9 short exercises']);
+  else opts.push(['couns','#C6E58A',IC.couns,'Talk to a counsellor','Any time you want to']);
+  if(social) opts.push(['buddyIntro','var(--pink)',IC.buddy,'Meet someone with similar interests','A student volunteer, not a counsellor']);
+  opts.push(['wsDetail:'+w.id,'var(--yellow)',IC.ws,'A workshop on this',w.title.split(':')[0]+' · '+w.day+' '+w.d+' '+w.m]);
+  opts.push(['resources','var(--sky)',IC.res,'Read or watch something','Trusted guides and videos']);
+  return {bg:'paper', html:'<h1>Here’s a next step</h1>'+main+'<p class="sec">Or choose something else</p><div class="opt-list">'+opts.map(function(o,i){ var p=o[0].split(':'); return '<button class="optl" data-act="go" data-to="'+p[0]+'" '+(p[1]?'data-v="'+p[1]+'"':'')+' style="animation-delay:'+(.1+i*.05)+'s"><span class="sw" style="background:'+o[1]+'">'+o[2]+'</span><span><b>'+o[3]+'</b><small>'+o[4]+'</small></span></button>'; }).join('')+'</div><p class="sub" style="font-size:12px"><span class="tag">Sample logic</span> Counsellors set the real rules for these suggestions.</p>'};
+};
+SC.safety = function(){ return {bg:'lilac', html:'<h1 data-curated>Thank you for telling us</h1><p data-curated>You don’t have to go through this alone. Let’s get you to a person who can help right now.</p><p class="why" data-curated>The guide doesn’t make this judgement itself. A counsellor will.</p><div class="push">'+pill('See who I can talk to','go',{to:'urgent'})+'</div>'}; };
+
+/* ---------- resources ---------- */
+SC.resources = function(){
+  if(SRES.length) return resourcesLive();
+  var f=S.resF, list=RES.filter(function(r){ return f==='All'||r[2]===f; });
+  return {bg:'paper', html:'<h1>Read and watch</h1><p class="sub">Reviewed resources from WHO, NHS, CCI and Indian services.</p><div class="chips-row">'+['All','Read','Watch','Workbook','Guide','Helpline'].map(function(x){ return '<button class="chip '+(f===x?'on':'')+'" data-act="resF" data-v="'+x+'">'+x+'</button>'; }).join('')+'</div>'+list.map(function(r,i){ return '<button class="res" data-act="resOpen" data-v="'+esc(r[0])+'" style="animation-delay:'+(i*.04)+'s"><span class="top"><b>'+r[0]+'</b><span class="fmt" style="background:'+FMT[r[2]]+'">'+r[2]+'</span></span><span style="font-size:13.5px">'+r[1]+'</span><small>'+r[3]+' · '+r[4]+'</small></button>'; }).join('')};
+};
+
+/* ---------- buddy system ---------- */
+SC.buddyIntro = function(){ return {bg:'pink', html:'<div class="pic big" style="background:rgba(255,255,255,.5);display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:0 24px 18px"><div style="width:38%">'+chr('sunny')+'</div><div style="width:38%">'+chr('foggy')+'</div></div><h1>Meet someone with similar interests</h1><p>We can introduce you to a student volunteer who likes the same things, for a coffee, a walk or studying together.</p><div class="evid"><b>Good to know</b>Buddies are fellow students, not counsellors. They never see anything you’ve told the guide. They only see that a student would like company for an activity.</div><div class="push">'+pill('I’d like that','go',{to:'buddyPick'})+link('Not right now','go',{to:'map'})+'</div>'}; };
+SC.buddyPick = function(){
+  var b=S.buddy;
+  return {bg:'pink', html:'<h1 style="font-size:26px">What would you like to do?</h1><div class="choices">'+['Coffee','A walk','Study together','Library','Sport','Club event'].map(function(x){ return '<button class="chip '+(b.act===x?'on':'')+'" data-act="bAct" data-v="'+x+'">'+x+'</button>'; }).join('')+'</div><p class="sec">Things you’re into</p><div class="choices">'+INTERESTS.map(function(x){ return '<button class="chip '+(b.ints.indexOf(x)>-1?'on':'')+'" data-act="bInt" data-v="'+x+'">'+x+'</button>'; }).join('')+'</div><p class="sec">When are you free?</p><div class="choices">'+['Between classes','Weekday evenings','Weekends'].map(function(x){ return '<button class="chip '+(b.time===x?'on':'')+'" data-act="bTime" data-v="'+x+'">'+x+'</button>'; }).join('')+'</div><div class="push">'+pill('Find matches','go',{to:'buddyFind',dis:!(b.act&&b.ints.length&&b.time)})+'</div>'};
+};
+SC.buddyFind = function(){ return {bg:'pink', html:'<h1 style="font-size:26px">Looking for people who like what you like</h1><div class="shuffle"><span class="sc"></span><span class="sc"></span><span class="sc"></span></div><p class="hint">Matching on interests, activity and free time. Never on anything you’ve told the guide.</p>', after:function(){ whoosh(); later(function(){ go('buddyCards',{},false); },2200); }}; };
+function ranked(){ var b=S.buddy; var norm=function(s){ return s.toLowerCase().replace(/s$/,''); };
+  var m={Art:['art','pottery','craft'],Film:['film'],Writing:['writing','poetry'],Music:['music','singing'],Dance:['dance'],Anime:['anime'],Sports:['basketball','cricket','football','squash','sports','boxing','swimming','motorsport'],Cooking:['cooking'],Theatre:['theatre'],Coding:['coding','math'],Fashion:['fashion'],Swimming:['swimming']};
+  return VOL.map(function(v){ var shared=v[2].filter(function(i){ return b.ints.some(function(x){ return (m[x]||[]).some(function(k){ return norm(i).indexOf(k)>-1; }); }); }); return {v:v, shared:shared}; }).sort(function(a,c){ return c.shared.length-a.shared.length; }); }
+SC.buddyCards = function(){
+  var list=ranked(), b=S.buddy, show=list.slice(b.idx*3, b.idx*3+3); if(!show.length){ b.idx=0; show=list.slice(0,3); }
+  var cols=['var(--yellow)','var(--sky)','#C6E58A'];
+  return {bg:'pink', html:'<h1 style="font-size:26px">People you might get on with</h1><p class="sub">No contact details are shared until you both say yes.</p>'+show.map(function(x,i){ var v=x.v; return '<div class="bud" style="animation-delay:'+(i*.08)+'s"><div class="who"><span class="av" style="background:'+cols[i]+'">'+v[0][0]+'</span><span><b>'+v[0]+'</b><br><small>'+v[1]+'</small></span></div><div class="chips-row">'+v[2].map(function(t){ return '<span class="itag '+(x.shared.indexOf(t)>-1?'shared':'')+'">'+t+'</span>'; }).join('')+'</div>'+pill('Ask '+v[0]+' for '+b.act.toLowerCase(),'bAsk',{v:v[0]})+'</div>'; }).join('')+'<div class="push">'+link('See others','bMore')+'</div>'};
+};
+SC.buddySent = function(){ var b=S.buddy; return {bg:'pink', html:'<h1 style="font-size:26px">Request sent</h1><svg class="plane" viewBox="0 0 64 64"><path d="M6 30L58 8L44 56L30 38z" fill="#fff"/><path d="M30 38L58 8L22 34" fill="#DCD0F8"/></svg><div class="panel"><span class="kicker">What '+b.match+' sees</span><p>“A student would like someone to join them for '+b.act.toLowerCase()+', '+b.time.toLowerCase()+'.”</p><p class="why">Nothing else is shared: not your name, not why you asked.</p></div><p class="hint">Waiting for '+b.match+'…</p>', after:function(){ later(function(){ go('buddyYes',{},false); },3200); }}; };
+SC.buddyYes = function(){ var b=S.buddy; var conf=''; for(var i=0;i<26;i++) conf+='<i style="left:'+(Math.random()*100)+'%;background:'+['#7B61FF','#FFE27A','#BFE3F5','#fff','#C6E58A'][i%5]+';animation-delay:'+(Math.random()*.6)+'s"></i>';
+  return {bg:'pink', html:'<div class="confetti" aria-hidden="true">'+conf+'</div><h1>'+b.match+' said yes</h1><div class="bud"><div class="who"><span class="av" style="background:var(--yellow)">'+b.match[0]+'</span><span><b>'+b.act+' with '+b.match+'</b><br><small>'+b.time+'</small></span></div></div><p class="sec">Share contact details?</p><button class="switch" data-act="bShare" aria-pressed="'+b.share+'"><span>Share my FLAME email with '+b.match+'</span><i></i></button><p class="why">'+b.match+' chose to share theirs. Each of you decides for yourself.</p><div class="push">'+pill('Add to calendar','bCal',{cls:'ghost'})+pill('Skip to after the meet-up','go',{to:'buddyAfter'})+'</div>', after:function(){ arp([523.25,659.25,783.99,1046.5],.1); }}; };
+SC.buddyAfter = function(){ var b=S.buddy, r=S.r; return {bg:'pink', html:'<span class="kicker">After the meet-up</span><h1>How did it go?</h1><div class="qopts">'+['Good, I’d like to meet again','It was okay','Not for me'].map(function(t){ return '<button class="qopt '+(r.bud===t?'on':'')+'" data-act="bHow" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div>'+(r.bud?'<div class="reply-card"><span class="dot"></span><span>'+(r.bud.indexOf('Good')===0?'Lovely. You could join a club or event together next.':(r.bud==='Not for me'?'That’s completely fine. You can end the match with no explanation, or try someone else.':'Thanks for trying it. You can keep going, pause, or try another match.'))+'</span></div>':'')+'<p class="why">You can end or pause a match any time, no explanation needed. If something worried you, you can flag it privately to the Wellbeing Centre.</p><div class="push">'+pill('Done','go',{to:'map',dis:!r.bud})+link('Flag a concern','go',{to:'couns'})+'</div>'}; };
+
+/* ---------- workshops ---------- */
+SC.workshops = function(){ var w0=wsFor(); return {bg:'paper', html:'<h1>Workshops</h1><p class="sub">Counsellor-led group sessions at the Wellbeing Centre. Nobody is signed up automatically.</p>'+WS.map(function(w,i){ return '<button class="ws" data-act="go" data-to="wsDetail" data-v="'+w.id+'" style="animation-delay:'+(i*.05)+'s"><span class="date"><small>'+w.m+'</small><b>'+w.d+'</b></span><span><strong>'+w.title.split(':')[0]+'</strong><span>'+w.who+' · '+w.day+', '+w.time+'</span>'+(S.plate.length&&w.id===w0.id?'<br><span class="pick">Matches what’s on your plate</span>':'')+'</span></button>'; }).join('')}; };
+SC.wsDetail = function(){ var w=WS.filter(function(x){return x.id===S.p.v;})[0]||WS[0], added=S.wsAdded.indexOf(w.id)>-1;
+  return {bg:'yellow', html:'<span class="kicker">Workshop</span><h1 style="font-size:26px">'+w.title+'</h1><div class="panel"><p><b>'+w.day+' '+w.d+' '+w.m+'</b> · '+w.time+'</p><p>With '+w.who+', '+w.spec.toLowerCase()+'</p><p class="why">Wellbeing Centre · <span class="tag">Room to be confirmed</span></p></div>'+(added?'<div class="calbox"><div class="cal"><div class="h">'+w.mf+' '+w.y+'</div><div class="g">'+Array.apply(null,{length:21}).map(function(_,n){ return '<i class="'+(n===10?'hit':'')+'"></i>'; }).join('')+'</div></div><span class="evchip">Added · reminder 1 hour before</span></div><p class="hint"><span class="tag">Prototype</span> No real calendar was changed.</p>':'<p>You’ll get a reminder before the session. Going is always up to you.</p>')+'<div class="push">'+(added?pill('Done','go',{to:'map'}):pill('Add to Google Calendar','wsAdd',{v:w.id}))+'</div>'}; };
+
+/* ---------- counsellor handoff ---------- */
+var SHARE=[['none','Nothing','Start fresh in the session'],['scores','My check-in answers only','The 7 questions'],['summary','A summary I review first','Written by the guide, edited by you'],['some','Selected messages','You pick which ones'],['all','My whole conversation','Everything from this session']];
+SC.couns = function(){ return {bg:'paper', html:'<div class="pic big" style="background:#C6E58A"><svg viewBox="0 0 300 246"><g style="animation:bob 3.2s ease-in-out infinite"><path d="M52 64h120a16 16 0 0 1 16 16v44a16 16 0 0 1-16 16h-70l-30 24v-24H52a16 16 0 0 1-16-16V80a16 16 0 0 1 16-16z" fill="#fff"/><circle cx="84" cy="102" r="7" fill="#7B61FF"/><circle cx="110" cy="102" r="7" fill="#7B61FF" opacity=".6"/><circle cx="136" cy="102" r="7" fill="#7B61FF" opacity=".3"/></g><g style="animation:bob 3.2s ease-in-out 1s infinite"><path d="M248 118H148a16 16 0 0 0-16 16v36a16 16 0 0 0 16 16h56l26 20v-20h18a16 16 0 0 0 16-16v-36a16 16 0 0 0-16-16z" fill="#2A1A6E"/><rect x="152" y="142" width="76" height="9" rx="4.5" fill="#fff" opacity=".8"/><rect x="152" y="158" width="50" height="9" rx="4.5" fill="#fff" opacity=".5"/></g></svg></div><h1>Talk to a counsellor</h1><p>FLAME’s Wellbeing Centre counsellors are trained professionals. You don’t need to use the guide first, and you decide what they see.</p><div class="push">'+pill('Book a session','go',{to:'counsShare'})+'</div>'}; };
+SC.counsShare = function(){ var c=S.couns; return {bg:'paper', html:'<span class="kicker">Before your session</span><h1 style="font-size:26px">What would you like to share?</h1><p class="sub">The counsellor sees only what you choose, and only for this session.</p><div class="qopts">'+SHARE.map(function(s,i){ return '<button class="qopt '+(c.share===s[0]?'on':'')+'" data-act="cShare" data-v="'+s[0]+'" style="animation-delay:'+(i*.04)+'s">'+s[1]+'<small>'+s[2]+'</small></button>'; }).join('')+'</div><div class="push">'+pill('Continue','cShareGo',{dis:!c.share})+'</div>'}; };
+function draftSummary(){ var f=S.feelings.filter(function(k){return k!=='notsure';}).map(function(k){return CH[k].label.toLowerCase();}), p=S.plate.map(function(k){return P[k][0].toLowerCase();});
+  return 'Over the past few weeks I’ve been feeling '+(f.join(' and ')||'unsure how I feel')+'. '+(p.length?'The main things on my plate are '+p.join(', ')+'. ':'')+(S.q[2]!==undefined?'It’s been going on for '+Q7[2].o[S.q[2]].toLowerCase()+'. ':'')+(S.last?'I tried '+A(S.last).name.toLowerCase()+(S.lastFb?' and it '+S.lastFb.toLowerCase().replace(/^it /,'')+'.':'.'):'')+' I’d like help with '+(S.pr[0].length?PREFS[0].o[S.pr[0][0]].toLowerCase():'working out what to do next')+'.'; }
+SC.counsSum = function(){ var c=S.couns; if(!c.summary) c.summary=draftSummary(); return {bg:'paper', html:'<span class="kicker">Your summary</span><h1 style="font-size:26px">Edit anything you like</h1><textarea class="field" id="csIn" style="min-height:190px">'+esc(c.summary)+'</textarea><p class="edit-note">Drafted by the guide. Nothing is sent until you press Share.</p><div class="push">'+pill('Share with counsellor','cSumGo')+'</div>'}; };
+SC.counsSlot = function(){ var c=S.couns; return {bg:'paper', html:'<span class="kicker">Book a session</span><h1 style="font-size:26px">Pick a time</h1><p class="sec">Day</p><div class="choices">'+COUNS_DAYS.map(function(d){ return '<button class="chip '+(c.day===d?'on':'')+'" data-act="cDay" data-v="'+d+'">'+d+'</button>'; }).join('')+'</div><p class="sec">Time</p><div class="slotgrid">'+['10:00','11:30','2:00','4:00'].map(function(t){ return '<button class="chip '+(c.slot===t?'on':'')+'" data-act="cSlot" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div><p class="sec">How</p><div class="choices">'+['In person','Video call'].map(function(t){ return '<button class="chip '+(c.how===t?'on':'')+'" data-act="cHow" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div><div class="push">'+pill('Book','cBook',{dis:!(c.day&&c.slot)})+'</div>'}; };
+SC.counsDone = function(){ var c=S.couns, sh=SHARE.filter(function(s){return s[0]===c.share;})[0]; return {bg:'sky', html:'<h1>You’re booked</h1><div class="ticket"><span class="kicker">Wellbeing Centre</span><b>'+c.day+' · '+c.slot+'</b><span>'+c.how+' with a FLAME counsellor</span><hr><span class="kicker">What they’ll see</span><span>'+sh[1]+'</span></div><p class="why">You’ll get a reminder that just says “You have an update”. You can change or cancel any time.</p><div class="push">'+pill('Done','go',{to:'map'})+'</div>', after:function(){ arp([392,523.25,659.25]); }}; };
+
+/* ---------- urgent help ---------- */
+SC.urgent = function(){ return {bg:'lilac', html:'<h1>Urgent help</h1><p>If you might hurt yourself or someone else, or you don’t feel safe right now, please talk to someone now.</p><a class="pill call" href="tel:14416" style="display:grid;place-items:center;text-decoration:none">Call Tele-MANAS · 14416</a><p class="why" style="margin-top:-6px">Free, 24/7, Government of India.</p><button class="pill white" data-act="toast" data-v="In the real app this calls FLAME’s on-call counsellor.">Call FLAME on-call counsellor</button><p class="why" style="margin-top:-6px"><span class="tag">Number to be confirmed by counsellors</span></p><a class="pill ghost" href="tel:112" style="display:grid;place-items:center;text-decoration:none">Emergency services · 112</a><div class="panel"><span class="kicker">What happens when you tap</span><ul class="urgent-list"><li>Your phone dials the number. Nothing is sent from this app.</li><li>You can hang up at any time.</li></ul><p class="why"><span class="tag">Waiting for counsellor review</span> Counsellors will write the final wording.</p></div>'}; };
+
+/* ---------- follow-up ---------- */
+SC.lock = function(){ return {bg:'night', raw:true, html:'<div class="lock"><span class="day">'+(function(){ var x=dateIn(2); return x.dayf+', '+x.d+' '+x.mf; })()+'</span><span class="clock">9:41</span><button class="notif" data-act="go" data-to="welcome"><span class="ap"><i></i></span><span><b>Campus Guide · now</b><span>You have an update</span></span></button><p class="hint">Two days later. The notification never says what it’s about.<br>Tap it to open.</p></div>', after:function(){ later(function(){ chime(880,1.2,.06); chime(1174.66,1.4,.05,.12); },700); }}; };
+SC.welcome = function(){ S.seenFollow=true; var r=S.r; var last=S.last?A(S.last).name:'Breathe for two minutes';
+  return {bg:'paper', html:'<div style="width:110px;margin:6px auto 0">'+(mainChar()==='notsure'?chr('sunny'):chr(mainChar()))+'</div><h1 style="text-align:center">Welcome back</h1><div class="reply-card"><span class="dot"></span><span>Last time you tried <b>'+last+'</b>'+({'It helped':' and said it helped.','It helped a little':' and said it helped a little.','It didn’t make a difference':' and said it didn’t make a difference.'}[S.lastFb]||'.')+' How are things today?</span></div><div class="qopts">'+['A bit better','About the same','Harder'].map(function(t){ return '<button class="qopt '+(r.today===t?'on':'')+'" data-act="today" data-v="'+t+'">'+t+'</button>'; }).join('')+'</div>'+(r.today==='Harder'?'<div class="reply-card"><span class="dot"></span><span>Thanks for telling me. Would you like to step up to a counsellor, or try something different?</span></div>':'')+'<div class="push">'+(r.today==='Harder'?pill('Talk to a counsellor','go',{to:'couns'})+pill('See my toolkit','go',{to:'toolkit',cls:'ghost'}):pill('See my toolkit','go',{to:'toolkit',dis:!r.today}))+'</div>'}; };
+SC.toolkit = function(){
+  var ids=S.toolkit.length?S.toolkit:['breathe'];
+  var items=ids.map(function(id){ var a=A(id); return '<button class="kitem" data-act="openAct" data-v="'+id+'" style="background:'+a.col+'"><span class="mini">'+ILL[id]+'</span><b>'+a.name+'</b></button>'; }).join('')+S.cards.map(function(c){ return '<div class="kitem card" style="background:'+c.col+'"><small class="kicker">Coping card</small><q data-notr>'+esc(c.remind)+'</q></div>'; }).join('');
+  var wk=[['Week 1','Check-in, plate and a breathing exercise','done'],['Week 2','Worry parking lot when worries pile up','now'],['Week 3','A short check-in again, to see what’s changed',''],['Week 4','Review with a counsellor, if you want to','']];
+  return {bg:'paper', html:'<h1>My toolkit</h1><p class="sub">'+(S.useMode==='anon'?'You’re anonymous, so this is kept for this session only.':'Saved under your private code. Only you can see it.')+'</p><div class="kit">'+items+'</div><p class="sec" style="font-size:16px">Your 4-week pathway</p><div class="path">'+wk.map(function(w,i){ return '<div class="wk '+w[2]+'" style="animation-delay:'+(i*.08)+'s"><small>'+w[0]+(w[2]==='now'?' · this week':'')+'</small><p>'+w[1]+'</p></div>'; }).join('')+'</div><div class="push">'+pill('That’s the whole journey','go',{to:'end'})+link('What this holds, and delete','delAll')+'</div>'};
+};
+SC.end = function(){ var row=ORDER.map(function(k,i){ return '<div style="animation-delay:'+(i*.12)+'s">'+chr(k)+'</div>'; }).join('');
+  return {bg:'violet', raw:true, html:'<div class="endwrap"><div class="dot" style="background:#fff;box-shadow:0 0 0 7px rgba(255,255,255,.28);animation:pulse 2.4s ease-in-out infinite"></div><h1 style="color:#fff;font-size:34px">That’s the end-to-end journey</h1><p style="color:#fff;font-size:16px;font-weight:500;max-width:290px">From “how are you” to the right kind of help, and back again.</p><div class="row6">'+row+'</div><button class="pill" style="background:#fff;color:var(--indigo);max-width:240px" data-act="restart">Start again</button><button class="link" style="color:#fff" data-act="go" data-to="map">Back to what’s here</button></div>', after:function(){ arp([392,523.25,659.25,783.99],.14); }}; };
+
+SC.exit = function(){ return {bg:'white', raw:true, html:'<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;gap:10px"><p class="sub"><span class="tag">Prototype</span> The real button opens a neutral website straight away, with no confirmation.</p><button class="pill ghost" data-act="back">Return to the prototype</button></div>'}; };
+
+/* ---------- bottom navigation (after the 'How would you like to start?' screen) ---------- */
+var TABROOT={checkin:'talk',plate:'talk',chat:'talk',next:'talk',map:'explore',know:'need'};
+var TABSHOW=['checkin','plate','chat','next','map','know','library','act','actCheck','resources','workshops','wsDetail','buddyIntro','couns','toolkit'];
+var TABS=[
+ ['talk','Talk','var(--pink)','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><circle cx="12" cy="11" r="1.6" fill="currentColor" stroke="none"/></svg>'],
+ ['explore','Explore','var(--sky)','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2l6 2l6-2v14l-6 2l-6-2l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>'],
+ ['need','My needs','var(--yellow)','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14M13 6l6 6l-6 6"/></svg>']
+];
+S.tab='talk';
+function tabbar(){ return '<nav class="tabbar" aria-label="Main">'+TABS.map(function(t){ var on=S.tab===t[0]; return '<button class="tab'+(on?' on':'')+'" data-act="tab" data-v="'+t[0]+'" style="--c:'+t[2]+'"'+(on?' aria-current="page"':'')+'><span class="ti">'+t[3]+'</span>'+t[1]+'</button>'; }).join('')+'</nav>'; }
+
+/* ---------- router ---------- */
+function go(name, param, push){
+  if(typeof param==='boolean'){ push=param; param=undefined; }
+  clearTimers();
+  if(push!==false && cur) hist.push({n:cur,p:S.p,r:S.r});
+  cur=name; if(name==='urgent') flagUrgent(); if(param!==undefined) S.p=param;
+  render();
+}
+function rerender(fresh){
+  clearTimers();
+  if(fresh===true){ render(); return; } // a new step (timer-driven): animate it in
+  var m=phone.querySelector('.scr'), top=m?m.scrollTop:0, a=document.activeElement, sel=null, keep={};
+  if(a && phone.contains(a) && a.dataset && a.dataset.act){
+    sel='[data-act="'+a.dataset.act+'"]'+(a.dataset.v!==undefined?'[data-v="'+String(a.dataset.v).replace(/(["\\])/g,'\\$1')+'"]':'')+(a.dataset.to?'[data-to="'+a.dataset.to+'"]':'');
+  }
+  ['wIn','prIn'].forEach(function(id){ var e=document.getElementById(id); if(e) keep[id]=e.value; });
+  render();
+  phone.querySelectorAll('.scr, .scr *').forEach(function(el){ if(getComputedStyle(el).animationName==='fadeUp') el.style.animation='none'; });
+  var n=phone.querySelector('.scr'); if(n) n.scrollTop=top;
+  Object.keys(keep).forEach(function(id){ var e=document.getElementById(id); if(e && !e.value) e.value=keep[id]; });
+  if(sel){ try{ var f=phone.querySelector(sel); if(f && !f.disabled) f.focus({preventScroll:true}); }catch(e){} }
+}
+function render(){
+  document.documentElement.lang={hi:'hi',mr:'mr'}[lc()]||'en';
+  var s=SC[cur]();
+  phone.dataset.bg=s.bg;
+  if(TABROOT[cur]) S.tab=TABROOT[cur];
+  var tabs = !s.raw && TABSHOW.indexOf(cur)>-1;
+  phone.classList.toggle('has-tabs', tabs);
+  phone.innerHTML = s.raw ? s.html : bar(cur==='intro'&&hist.length<2)+'<main class="scr">'+s.html+'</main>'+(s.strip?STRIP:'')+(tabs?tabbar():'');
+  if(s.amb) ambOn(); else ambOff();
+  if(s.after) s.after();
+}
+function back(){ clearTimers(); if(cur==='q7' && S.qi>0){ S.qi--; render(); return; } var h=hist.pop()||{n:'arrive',p:{},r:{}}; if(cur==='breathe'){ S.chatStage = S.chat.length ? 2 : 0; } cur=h.n; S.p=h.p||{}; S.r=h.r||{}; render(); }
+function startAct(id){ S.r={}; S.last=id; if(id==='breathe'){ S.breathFrom='lib'; go('breathe',{id:id}); } else go(id,{id:id}); }
+
+/* ---------- actions ---------- */
+var ACT = {
+  go:function(t){ var to=t.dataset.to; if(to==='breathe'){ S.chatStage=2; S.breathFrom='chat'; } if(to==='q7'){ S.qi=0; S.q=[]; } if(to==='buddyFind'||to==='buddyCards'||to==='buddyAfter'||to==='welcome'){ S.r={}; } go(to, t.dataset.v!==undefined?{v:t.dataset.v}:{}); },
+  back:back, exit:function(){ go('exit'); },
+  tab:function(t,v){ var root = v==='talk' ? (S.chat.length ? 'chat' : 'checkin') : (v==='explore' ? 'map' : 'know');
+    if(cur===root){ var m=phone.querySelector('.scr'); if(m) m.scrollTo({top:0,behavior:'smooth'}); return; }
+    clearTimers(); S.tab=v; S.r={}; hist=[{n:'ways',p:{},r:{}}]; cur=root; S.p={}; render(); },
+  snd:function(t){ SND.on=!SND.on; t.setAttribute('aria-pressed',SND.on); t.setAttribute('aria-label','Sound '+(SND.on?'on':'off')); if(SND.on){ actx(); chime(659.25,1,.08); if(SC[cur]&&SC[cur]().amb) ambOn(); toast('Sound on. Activities play a soft background and gentle chimes.'); } else ambOff(); },
+  introNext:function(){ if(S.introCard<2){ S.introCard++; go('intro',false); } else go('usemode'); },
+  lang:function(t,v){ S.lang=v; go('intro',false); },
+  umNext:function(){ go(S.useMode==='pers' ? 'contact' : 'ways'); },
+  usemode:function(t,v){ S.useMode=v; phone.querySelectorAll('.mode').forEach(function(m){ m.classList.toggle('on', m.dataset.v===v); }); document.getElementById('umGo').disabled=false; },
+  feel:function(t,v){ var i=S.feelings.indexOf(v); if(i>-1) S.feelings.splice(i,1); else S.feelings.push(v);
+    t.classList.toggle('on'); t.setAttribute('aria-pressed', i===-1); document.getElementById('grid').classList.toggle('has-pick', S.feelings.length>0); document.getElementById('feelGo').disabled = !S.feelings.length; },
+  plate:function(t,v){ var j=S.plate.indexOf(v), added=j===-1; if(added) S.plate.push(v); else S.plate.splice(j,1);
+    if(added){ var used=Object.keys(S.slotOf).map(function(x){ return S.slotOf[x]; }), q=0; while(used.indexOf(q)>-1) q++; S.slotOf[v]=q; } else delete S.slotOf[v];
+    t.classList.toggle('on'); t.setAttribute('aria-pressed', added); document.getElementById('plateBox').innerHTML=plateHTML(added?v:'none');
+    if(v==='other'){ if(!added) S.otherText=''; document.getElementById('otherWrap').innerHTML = added ? '<input class="else" id="otherText" type="text" maxlength="60" placeholder="A few words, or leave it empty" aria-label="Something else">' : ''; } },
+  toChat:function(){ S.chat=[]; S.aiHistory=[]; S.flow=null; S.chatStage=0; S.breathDone=false; go('chat'); },
+  reply:function(t,v){ var log=document.getElementById('log'), label=enText(t); document.getElementById('replies').innerHTML='';
+    if(v==='try'){ S.breathFrom='chat'; go('breathe'); return; }
+    if(v==='q7'){ S.qi=0; S.q=[]; go('q7'); return; }
+    S.chat.push(uMsg(label)); log.insertAdjacentHTML('beforeend', uMsg(label));
+    if(v==='else'){ later(function(){ go('map'); },600); }
+    else if(v.indexOf('fb_')===0){ var f=FB.filter(function(x){ return 'fb_'+x[0]===v; })[0]; S.lastFb=f[1]; S.chatStage=-1; say(CHATACK[f[0]], function(){ S.chatStage=6; chatStep(); }); } },
+  bStart:runBreath,
+  bStop:function(){ clearTimers(); if(S.breathFrom==='lib'){ go('actCheck',{id:'breathe'},false); } else { hist.pop(); S.chatStage=3; go('chat',false); } },
+  openAct:function(t,v){ go('act',{id:v}); },
+  startAct:function(t,v){ startAct(v); },
+  actStop:function(){ clearTimers(); var id=S.p.id; S.r={}; go('actCheck',{id:id},false); },
+  actDone:function(){ clearTimers(); var id=S.p.id; S.r={}; S.last=id; go('actCheck',{id:id},false); },
+  fb:function(t,v){ S.r.fb=v; rerender(); },
+  kitSave:function(t,v){ if(S.toolkit.indexOf(v)<0) S.toolkit.push(v); arp([659.25,783.99,1046.5],.09); rerender(); },
+  /* PMR */
+  pmrGo:function(){ S.r.started=true; S.r.i=0; rerender(); },
+  pmrSkip:function(){ clearTimers(); pmrNext(); },
+  /* grounding */
+  sense:function(t){ var g=GR[S.r.i||0]; S.r.got=Math.min((S.r.got||0)+1,g.n); chime(PENTA[(S.r.got-1)%5],1.4,.08); rerender(); },
+  grNext:function(){ S.r.i=(S.r.i||0)+1; S.r.got=0; if(S.r.i>=GR.length){ arp([523.25,659.25,783.99]); ACT.actDone(); return; } chime(440,1.2,.05); rerender(); },
+  /* parking lot */
+  wAdd:function(){ var i=document.getElementById('wIn'), v=i.value.trim(); if(!v) return; S.r.w.push({t:v}); chime(587.33,1,.06); rerender(); },
+  wSug:function(t,v){ S.r.w.push({t:v}); chime(587.33,1,.06); rerender(); },
+  wPark:function(){ S.r.st=1; S.r.newIdx=-1; rerender(); },
+  wBay:function(t,v){ var p=v.split(':'), n=+p[0]; var had=S.r.w[n].bay; S.r.w[n].bay=p[1]; S.r.newIdx=n; whoosh(); if(!had) later(function(){ chime(392,1.2,.06); },900); rerender(); },
+  wNext:function(){ S.r.st=2; S.r.newIdx=-1; rerender(); },
+  wPick:function(t,v){ S.r.pick=v; rerender(); },
+  wDone:function(){ S.r.st=3; arp([523.25,659.25,783.99]); rerender(); },
+  /* menu */
+  mCat:function(t,v){ S.r.cat=v; S.r.item=null; rerender(); },
+  mItem:function(t,v){ S.r.item=v; rerender(); },
+  mNext:function(){ S.r.st=1; rerender(); },
+  mMin:function(t,v){ S.r.min=+v; rerender(); },
+  mStart:function(){ S.r.st=2; chime(523.25,1.4,.07); rerender(); },
+  mEnd:function(){ S.r.st=3; arp([523.25,659.25,783.99]); rerender(); },
+  mFelt:function(t,v){ S.r.felt=v; rerender(); },
+  mAgain:function(t,v){ S.r.again=v; rerender(); },
+  /* coping card */
+  cPick:function(t,v){ S.r[CP[S.r.st||0].k]=v; rerender(); },
+  cNext:function(){ var st=S.r.st||0, ta=document.getElementById('cIn'); if(ta&&ta.value.trim()) S.r[CP[st].k]=ta.value.trim(); if(!S.r[CP[st].k]) S.r[CP[st].k]=CP[st].o[st===2?0:1]; S.r.st=st+1; if(S.r.st===3) arp([523.25,659.25]); rerender(); },
+  cCol:function(t,v){ S.r.col=v; rerender(); },
+  cSave:function(){ if(S.r.saved) return; S.r.saved=true; S.cards.push({remind:S.r.remind, col:S.r.col||CCOL[0]}); arp([783.99,987.77,1174.66,1567.98],.08); var el=document.getElementById('cc'); if(el) sparkle(el); later(rerender,950); },
+  /* SFN */
+  sPriv:function(t){ S.r.priv=!S.r.priv; t.setAttribute('aria-pressed',S.r.priv); },
+  sF:function(t,v){ var a=S.r.f, i=a.indexOf(v); if(i>-1) a.splice(i,1); else a.push(v); rerender(); },
+  sN:function(t,v){ var a=S.r.n, i=a.indexOf(v); if(i>-1) a.splice(i,1); else a.push(v); rerender(); },
+  sNx:function(t,v){ S.r.next=v; rerender(); },
+  sNext:function(){ var ta=document.getElementById('sIn'); if(ta) S.r.what=ta.value.trim(); S.r.st=(S.r.st||0)+1; chime(440,1,.05); rerender(); },
+  /* break it down */
+  bMain:function(t,v){ S.r.main=v; rerender(); },
+  bFirst:function(t,v){ S.r.first=+v; chime(523.25+(+v)*60,1,.06); rerender(); },
+  bSet:function(t,v){ var p=v.split(':'); S.r[p[0]]=p[1]; rerender(); },
+  bNext:function(){ var ta=document.getElementById('bIn'); if(ta) S.r.spec=ta.value.trim(); S.r.st=(S.r.st||0)+1; rerender(); },
+  bYes:function(){ S.r.st=5; arp([523.25,659.25,783.99]); rerender(); },
+  bSmall:function(){ S.r.small=true; S.r.dur='5 minutes'; S.r.st=5; rerender(); toast('Made it smaller: just open the notes and find the first topic, for 5 minutes.'); },
+  bRem:function(){ toast('<span class="tag">Prototype</span> A gentle, generic reminder would be set here.'); },
+  /* decision tree */
+  tEx:function(t,v){ S.r.dec=v; var ta=document.getElementById('tIn'); if(ta) ta.value=v; if(v.indexOf('elective')>-1) S.r.opts=['The elective I enjoy','The one that helps placements']; else if(v.indexOf('roommate')>-1) S.r.opts=['Talk to my roommate','Let it go for now']; else S.r.opts=['Apply for internships','Focus on my exams']; S.r.know={}; S.r.find={}; S.r.act={}; chime(523.25,1,.05); },
+  tAdd:function(){ tSave(); S.r.opts.push('A bit of both'); rerender(); },
+  tAct:function(t,v){ var p=v.split('|'); S.r.act[+p[0]]=p[1]; chime(587.33,1,.05); rerender(); },
+  tHelp:function(t,v){ var a=S.r.help, i=a.indexOf(v); if(i>-1) a.splice(i,1); else a.push(v); rerender(); },
+  tNext:function(){ tSave(); S.r.st=(S.r.st||0)+1; chime(440,1,.05); rerender(); },
+  /* 7 questions */
+  qAns:function(t,v){ S.q[S.qi]=+v; rerender(); },
+  qSkip:function(){ S.q[S.qi]=undefined; ACT.qNext(true); },
+  qNext:function(skip){ var q=Q7[S.qi]; if(q.safety && (S.q[S.qi]===1||S.q[S.qi]===2)){ flagUrgent(); go('safety'); return; } if(S.qi<6){ S.qi++; go('q7',{} ,false); } else go('qtext'); },
+  qtNext:function(){ var ta=document.getElementById('qtIn'); if(ta) S.qtext=ta.value; go('prefs',{i:0}); },
+  prAns:function(t,v){ var i=S.p.i||0, a=S.pr[i], n=+v, j=a.indexOf(n); if(j>-1) a.splice(j,1); else a.push(n); rerender(); },
+  prNext:function(){ var i=S.p.i||0; if(i===2){ var ta=document.getElementById('prIn'); if(ta) S.prNote=ta.value; go('next'); } else { S.p={i:i+1}; rerender(); } },
+  /* resources */
+  resF:function(t,v){ S.resF=v; rerender(); },
+  resOpen:function(t,v){ toast('<span class="tag">Prototype</span> In the full app this opens '+v.split(' – ')[0]+'’s resource.'); },
+  /* buddy */
+  bAct:function(t,v){ S.buddy.act=v; rerender(); }, bInt:function(t,v){ var a=S.buddy.ints, i=a.indexOf(v); if(i>-1) a.splice(i,1); else a.push(v); rerender(); }, bTime:function(t,v){ S.buddy.time=v; rerender(); },
+  bAsk:function(t,v){ S.buddy.match=v; whoosh(); go('buddySent'); },
+  bMore:function(){ S.buddy.idx++; rerender(); },
+  bShare:function(t){ S.buddy.share=!S.buddy.share; t.setAttribute('aria-pressed',S.buddy.share); },
+  bCal:function(){ toast('<span class="tag">Prototype</span> Added to your calendar with a generic title.'); },
+  bHow:function(t,v){ S.r.bud=v; rerender(); },
+  /* workshops */
+  wsAdd:function(t,v){ S.wsAdded.push(v); rerender(); later(function(){ chime(783.99,1.2,.07); chime(1046.5,1.4,.06,.12); },700); },
+  /* counsellor */
+  cShare:function(t,v){ S.couns.share=v; rerender(); },
+  cShareGo:function(){ if(S.couns.share==='summary') go('counsSum'); else go('counsSlot'); },
+  cSumGo:function(){ var ta=document.getElementById('csIn'); if(ta) S.couns.summary=ta.value; go('counsSlot'); },
+  cDay:function(t,v){ S.couns.day=v; rerender(); }, cSlot:function(t,v){ S.couns.slot=v; rerender(); }, cHow:function(t,v){ S.couns.how=v; rerender(); },
+  cBook:function(){ go('counsDone'); },
+  /* follow-up */
+  today:function(t,v){ S.r.today=v; rerender(); },
+  delAll:function(){ go('mydata'); },
+  /* scaffold actions */
+  ecSave:function(){ S.contact=val('ecInput')||null; go('ways'); },
+  ecSkip:function(){ S.contact=null; go('ways'); },
+  fnext:function(t){ var rp=document.getElementById('replies'); if(rp) rp.innerHTML=''; pwEcho(enText(t)); S.flow.i++; pwStep(); },
+  fgo:function(t,v){ var rp=document.getElementById('replies'); if(rp) rp.innerHTML=''; pwEcho(enText(t)); if(v==='res') go('map'); else pwRun(v); },
+  frel:function(t,v){ pwRelease(v); },
+  fq:function(t,v){ var rq=document.getElementById('replies'); if(rq) rq.innerHTML=''; pwEcho(enText(t)); S.sq={id:v,idx:0,ans:[]}; go('quiz'); },
+  sqAns:function(t,v){
+    var qq=S.sq, qd=qDef(qq.id), qv=+v; qq.ans.push(qv);
+    if(qd.items[qq.idx].urgentOn && qd.items[qq.idx].urgentOn.indexOf(qv)>-1){ S.sq=null; cur='chat'; go('urgent'); return; }
+    qq.idx++;
+    if(qq.idx<qd.items.length) go('quiz',false);
+    else { var rec={kind:qq.id==='survey'?'survey':'scale',id:qq.id,answers:qq.ans,date:Date.now()}; S.results.push(rec); S.done[qq.id]=1; S.lastRes=rec; S.sq=null; go(rec.kind==='survey'?'chat':'qres',false); }
+  },
+  send:function(){ sendMsg(); },
+  resFilter:function(t,v){ S.resFilter=v; rerender(); },
+  hoSend:function(){
+    var hb={summary:{concern:val('hoWhat'),duration:val('hoLong'),tried:val('hoTried')}}, hc=document.getElementById('hoContact'); if(hc&&hc.checked) hb.contact=S.contact; var hr=document.getElementById('hoRes'); if(hr&&hr.checked) hb.results=S.results;
+    fetch('/api/handoff',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(hb)}).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+      .then(function(d){ S.mine.push({id:d.id,summary:hb.summary}); go('sent'); })
+      .catch(function(){ var m=document.getElementById('hoMsg'); if(m) m.textContent='That didn’t send. Please try again, or contact the counselling centre directly.'; });
+  },
+  del:function(t,v){
+    var did=v==='code'?val('delCode'):v; if(!did) return;
+    fetch('/api/handoff/'+encodeURIComponent(did),{method:'DELETE'}).then(function(r){ if(!r.ok) throw 0; S.mine=S.mine.filter(function(m){return m.id!==did;}); go('mydata',false); })
+      .catch(function(){ var m=document.getElementById('delMsg'); if(m) m.textContent='Couldn’t find a note with that code.'; });
+  },
+  toast:function(t,v){ toast(v); },
+  restart:function(){ var keepSnd=SND.on; S.feelings=[]; S.plate=[]; S.chat=[]; S.chatStage=0; S.introCard=0; S.q=[]; S.pr=[[],[],[]]; S.toolkit=[]; S.cards=[]; S.last=null; S.lastFb=null; S.useMode=null; S.couns={share:null,summary:'',day:null,slot:null,how:'In person'}; S.buddy={act:null,ints:[],time:null,idx:0,match:null,share:false}; S.wsAdded=[]; S.qtext=''; S.prNote=''; S.otherText=''; S.qi=0; S.breathDone=false; S.breathFrom='chat'; S.tab='talk'; S.p={}; S.resF='All'; S.resFilter='all'; S.seenFollow=false; S.slotOf={}; S.busy=false; S.aiHistory=[]; S.flow=null; S.tried=[]; S.results=[]; S.done={}; S.sq=null; S.lastRes=null; S.contact=null; S.mine=[]; hist=[]; cur=null; S.r={}; SND.on=keepSnd; go('arrive',false); }
+};
+
+phone.addEventListener('input', function(e){ if(e.target.id==='otherText') S.otherText=e.target.value; });
+phone.addEventListener('keydown', function(e){ if(e.target.id==='compose' && e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); } });
+phone.addEventListener('keydown', function(e){ if(e.key==='Enter' && e.target.id==='wIn'){ e.preventDefault(); ACT.wAdd(); } });
+phone.addEventListener('click', function(e){
+  var t=e.target.closest('[data-act]'); if(!t||t.disabled) return;
+  if(t.tagName==='A') return;
+  var a=t.dataset.act, v=t.dataset.v;
+  if(ACT[a]) ACT[a](t,v);
+});
+phone.addEventListener('click', function(e){ if(e.target.closest('#cc')){ S.r.flip=!S.r.flip; document.getElementById('cc').classList.toggle('flip'); document.getElementById('cc').classList.remove('build'); } });
+
+fetch('/api/health').then(function(r){return r.json();}).then(function(h){ S.serverOk=!!h.ai; }).catch(function(){});
+fetch('/api/resources').then(function(r){return r.json();}).then(function(j){ SRES=j.resources||[]; }).catch(function(){});
+fetch('/api/scales').then(function(r){return r.json();}).then(function(j){ SC_CFG=j; }).catch(function(){});
+['hi','mr'].forEach(function(l){ fetch('lang/'+l+'.json').then(function(r){return r.json();}).then(function(j){ CUR[l]=j; }).catch(function(){}); });
+var lm=location.search.match(/lang=(hi|mr)/); if(lm) S.lang={hi:'हिंदी',mr:'मराठी'}[lm[1]];
+go('arrive', false);
+})();
+
+</script>
+
+</body></html>

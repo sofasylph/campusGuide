@@ -1,0 +1,660 @@
+{
+ "_note": "Questionnaires and the survey. Wording was entered from the team's questionnaire document and still needs verification against the official versions (wordingVerified:false). Thresholds (bands) come from the same document and need counsellor approval (approved:false). descriptive:true means a descriptive grouping, not a clinical cut-off. 'offer' says when a scale is suggested: feelings and plate keys. placement.survey and placement.scales choose where they appear in the journey: 'pathwayEnd' or 'off'. Change them once the journey map is final.",
+ "placement": {
+  "survey": "pathwayEnd",
+  "scales": "pathwayEnd"
+ },
+ "scales": [
+  {
+   "id": "phq4",
+   "name": "PHQ-4",
+   "version": "PHQ-4 (Löwe 2010)",
+   "enabled": true,
+   "wordingVerified": false,
+   "approved": false,
+   "stem": "Over the last two weeks, how often have you been bothered by the following problems?",
+   "o": [
+    "Not at all",
+    "Several days",
+    "More than half the days",
+    "Nearly every day"
+   ],
+   "v": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "method": "sum",
+   "max": 12,
+   "dir": "Higher scores mean more distress.",
+   "bands": [
+    {
+     "lo": 0,
+     "hi": 2,
+     "flag": "green",
+     "label": "None or minimal distress"
+    },
+    {
+     "lo": 3,
+     "hi": 5,
+     "flag": "yellow",
+     "label": "Mild distress"
+    },
+    {
+     "lo": 6,
+     "hi": 12,
+     "flag": "red",
+     "label": "Moderate to severe distress"
+    }
+   ],
+   "offer": {
+    "feelings": [
+     "buzzy",
+     "heavy",
+     "foggy"
+    ]
+   },
+   "items": [
+    {
+     "q": "Feeling nervous, anxious or on edge"
+    },
+    {
+     "q": "Not being able to stop or control worrying"
+    },
+    {
+     "q": "Little interest or pleasure in doing things"
+    },
+    {
+     "q": "Feeling down, depressed, or hopeless"
+    }
+   ],
+   "subs": [
+    {
+     "name": "Anxiety",
+     "items": [
+      0,
+      1
+     ],
+     "atLeast": 3
+    },
+    {
+     "name": "Depression",
+     "items": [
+      2,
+      3
+     ],
+     "atLeast": 3
+    }
+   ]
+  },
+  {
+   "id": "who5",
+   "name": "WHO-5 Well-Being Index",
+   "version": "WHO-5 (1998)",
+   "enabled": true,
+   "wordingVerified": false,
+   "approved": false,
+   "stem": "Please indicate which option best describes how you have been feeling over the last two weeks.",
+   "o": [
+    "At no time",
+    "Some of the time",
+    "Less than half of the time",
+    "More than half of the time",
+    "Most of the time",
+    "All of the time"
+   ],
+   "v": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "method": "sum4",
+   "max": 100,
+   "dir": "Higher scores mean better well-being.",
+   "bands": [
+    {
+     "lo": 0,
+     "hi": 12,
+     "flag": "red",
+     "label": "Below the commonly used well-being threshold"
+    },
+    {
+     "lo": 13,
+     "hi": 25,
+     "flag": "green",
+     "label": "Not below the threshold"
+    }
+   ],
+   "offer": {
+    "feelings": [
+     "sleepy",
+     "foggy",
+     "heavy"
+    ]
+   },
+   "items": [
+    {
+     "q": "I have felt cheerful and in good spirits."
+    },
+    {
+     "q": "I have felt calm and relaxed."
+    },
+    {
+     "q": "I have felt active and vigorous."
+    },
+    {
+     "q": "I woke up feeling fresh and rested."
+    },
+    {
+     "q": "My daily life has been filled with things that interest me."
+    }
+   ],
+   "bandOn": "raw"
+  },
+  {
+   "id": "pss4",
+   "name": "PSS-4 Perceived Stress Scale",
+   "version": "PSS-4 (Cohen 1983)",
+   "enabled": true,
+   "wordingVerified": false,
+   "approved": false,
+   "stem": "The questions ask about your feelings and thoughts during the last month. For each question, select how often you felt or thought a certain way.",
+   "o": [
+    "Never",
+    "Almost never",
+    "Sometimes",
+    "Fairly often",
+    "Very often"
+   ],
+   "v": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "method": "sum",
+   "max": 16,
+   "dir": "Higher scores mean more perceived stress. There are no validated severity bands, so none are shown.",
+   "bands": [],
+   "offer": {
+    "feelings": [
+     "knotted"
+    ],
+    "plate": [
+     "exams",
+     "work",
+     "money"
+    ]
+   },
+   "items": [
+    {
+     "q": "In the last month, how often have you felt that you were unable to control the important things in your life?"
+    },
+    {
+     "q": "In the last month, how often have you felt confident about your ability to handle your personal problems?",
+     "rev": true
+    },
+    {
+     "q": "In the last month, how often have you felt that things were going your way?",
+     "rev": true
+    },
+    {
+     "q": "In the last month, how often have you felt difficulties were piling up so high that you could not overcome them?"
+    }
+   ],
+   "permissionNote": "Check reproduction permission before wider use."
+  },
+  {
+   "id": "isi",
+   "name": "Insomnia Severity Index",
+   "version": "ISI",
+   "enabled": false,
+   "wordingVerified": false,
+   "approved": false,
+   "stem": "",
+   "o": [],
+   "v": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "method": "sum",
+   "max": 28,
+   "dir": "",
+   "bands": [
+    {
+     "lo": 0,
+     "hi": 7,
+     "flag": "green",
+     "label": "No clinically significant insomnia"
+    },
+    {
+     "lo": 8,
+     "hi": 14,
+     "flag": "yellow",
+     "label": "Subthreshold insomnia"
+    },
+    {
+     "lo": 15,
+     "hi": 28,
+     "flag": "red",
+     "label": "Moderate to severe insomnia"
+    }
+   ],
+   "offer": {
+    "plate": [
+     "sleep"
+    ]
+   },
+   "items": [],
+   "permissionNote": "Disabled: items must not be reproduced until the rights holder confirms permission."
+  },
+  {
+   "id": "ucla3",
+   "name": "UCLA 3-Item Loneliness Scale",
+   "version": "UCLA-3 (Hughes 2004)",
+   "enabled": true,
+   "wordingVerified": false,
+   "approved": false,
+   "stem": "How often do you feel the following?",
+   "o": [
+    "Hardly ever",
+    "Some of the time",
+    "Often"
+   ],
+   "v": [
+    1,
+    2,
+    3
+   ],
+   "method": "sum",
+   "max": 9,
+   "dir": "Higher scores mean more reported loneliness.",
+   "bands": [
+    {
+     "lo": 3,
+     "hi": 5,
+     "flag": "green",
+     "label": "Lower reported loneliness",
+     "descriptive": true
+    },
+    {
+     "lo": 6,
+     "hi": 9,
+     "flag": "yellow",
+     "label": "Higher reported loneliness",
+     "descriptive": true
+    }
+   ],
+   "offer": {
+    "plate": [
+     "alone",
+     "friends"
+    ]
+   },
+   "items": [
+    {
+     "q": "How often do you feel that you lack companionship?"
+    },
+    {
+     "q": "How often do you feel left out?"
+    },
+    {
+     "q": "How often do you feel isolated from others?"
+    }
+   ]
+  },
+  {
+   "id": "osss3",
+   "name": "Oslo Social Support Scale (OSSS-3)",
+   "version": "OSSS-3 (Bøen 2012)",
+   "enabled": true,
+   "wordingVerified": false,
+   "approved": false,
+   "stem": "",
+   "o": [],
+   "v": [],
+   "method": "sum",
+   "max": 14,
+   "dir": "Higher scores mean more perceived support.",
+   "bands": [
+    {
+     "lo": 3,
+     "hi": 8,
+     "flag": "red",
+     "label": "Poor perceived support",
+     "descriptive": true
+    },
+    {
+     "lo": 9,
+     "hi": 11,
+     "flag": "yellow",
+     "label": "Moderate perceived support",
+     "descriptive": true
+    },
+    {
+     "lo": 12,
+     "hi": 14,
+     "flag": "green",
+     "label": "Strong perceived support",
+     "descriptive": true
+    }
+   ],
+   "offer": {
+    "plate": [
+     "alone",
+     "family",
+     "friends",
+     "loss"
+    ]
+   },
+   "items": [
+    {
+     "q": "How many people are so close to you that you can count on them if you have great personal problems?",
+     "o": [
+      "None",
+      "1–2",
+      "3–5",
+      "5 or more"
+     ],
+     "v": [
+      1,
+      2,
+      3,
+      4
+     ]
+    },
+    {
+     "q": "How much interest and concern do people show in what you do?",
+     "v": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "o": [
+      "No interest or concern",
+      "Little interest or concern",
+      "Uncertain",
+      "Some interest and concern",
+      "A lot of interest and concern"
+     ]
+    },
+    {
+     "q": "How easy is it to get practical help from neighbours if you should need it?",
+     "v": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "o": [
+      "Very difficult",
+      "Difficult",
+      "Possible",
+      "Easy",
+      "Very easy"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "brs",
+   "name": "Brief Resilience Scale",
+   "version": "BRS (Smith 2008)",
+   "enabled": true,
+   "wordingVerified": false,
+   "approved": false,
+   "stem": "Please indicate how much you agree or disagree with each statement.",
+   "o": [
+    "Strongly disagree",
+    "Disagree",
+    "Neutral",
+    "Agree",
+    "Strongly agree"
+   ],
+   "v": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "method": "mean",
+   "max": 5,
+   "dir": "Higher scores mean an easier recovery from stress.",
+   "bands": [
+    {
+     "lo": 1.0,
+     "hi": 2.99,
+     "flag": "red",
+     "label": "Low resilience",
+     "descriptive": true
+    },
+    {
+     "lo": 3.0,
+     "hi": 4.3,
+     "flag": "yellow",
+     "label": "Average resilience",
+     "descriptive": true
+    },
+    {
+     "lo": 4.31,
+     "hi": 5.0,
+     "flag": "green",
+     "label": "High resilience",
+     "descriptive": true
+    }
+   ],
+   "offer": {
+    "feelings": [
+     "knotted"
+    ],
+    "plate": [
+     "family",
+     "money"
+    ]
+   },
+   "items": [
+    {
+     "q": "I tend to bounce back quickly after hard times."
+    },
+    {
+     "q": "I have a hard time making it through stressful events.",
+     "rev": true
+    },
+    {
+     "q": "It does not take me long to recover from a stressful event."
+    },
+    {
+     "q": "It is hard for me to snap back when something bad happens.",
+     "rev": true
+    },
+    {
+     "q": "I usually come through difficult times with little trouble."
+    },
+    {
+     "q": "I tend to take a long time to get over setbacks in my life.",
+     "rev": true
+    }
+   ]
+  },
+  {
+   "id": "rses",
+   "name": "Rosenberg Self-Esteem Scale",
+   "version": "RSES (Rosenberg 1965)",
+   "enabled": true,
+   "wordingVerified": false,
+   "approved": false,
+   "stem": "Please indicate how much you agree or disagree with each statement.",
+   "o": [
+    "Strongly agree",
+    "Agree",
+    "Disagree",
+    "Strongly disagree"
+   ],
+   "v": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "method": "sum",
+   "max": 30,
+   "dir": "Higher scores mean higher self-esteem.",
+   "bands": [
+    {
+     "lo": 0,
+     "hi": 14,
+     "flag": "red",
+     "label": "Lower self-esteem",
+     "descriptive": true
+    },
+    {
+     "lo": 15,
+     "hi": 24,
+     "flag": "yellow",
+     "label": "Typical self-esteem",
+     "descriptive": true
+    },
+    {
+     "lo": 25,
+     "hi": 30,
+     "flag": "green",
+     "label": "High self-esteem",
+     "descriptive": true
+    }
+   ],
+   "offer": {},
+   "items": [
+    {
+     "q": "On the whole, I am satisfied with myself."
+    },
+    {
+     "q": "At times, I think I am no good at all.",
+     "rev": true
+    },
+    {
+     "q": "I feel that I have a number of good qualities."
+    },
+    {
+     "q": "I am able to do things as well as most other people."
+    },
+    {
+     "q": "I feel I do not have much to be proud of.",
+     "rev": true
+    },
+    {
+     "q": "I certainly feel useless at times.",
+     "rev": true
+    },
+    {
+     "q": "I feel that I am a person of worth, at least on an equal plane with others."
+    },
+    {
+     "q": "I wish I could have more respect for myself.",
+     "rev": true
+    },
+    {
+     "q": "All in all, I am inclined to feel that I am a failure.",
+     "rev": true
+    },
+    {
+     "q": "I take a positive attitude toward myself."
+    }
+   ]
+  }
+ ],
+ "survey": {
+  "id": "survey",
+  "name": "Understanding your experience",
+  "version": "structure-doc-1",
+  "stem": "There are no right or wrong answers. Choose the options that best describe your experience.",
+  "items": [
+   {
+    "q": "How intense would you say this problem has been for you?",
+    "o": [
+     "Very mild",
+     "Mild",
+     "Moderate",
+     "Severe",
+     "Very severe"
+    ]
+   },
+   {
+    "q": "How frequently have you been experiencing this concern?",
+    "o": [
+     "Rarely",
+     "A few times a month",
+     "A few times a week",
+     "Almost every day",
+     "Several times a day",
+     "Constantly or nearly constantly"
+    ]
+   },
+   {
+    "q": "How long have you been experiencing this concern?",
+    "o": [
+     "Less than a week",
+     "1–4 weeks",
+     "1–3 months",
+     "3–6 months",
+     "More than 6 months",
+     "I’m not sure"
+    ]
+   },
+   {
+    "q": "How much has this concern affected your everyday life? (For example your academics, sleep, relationships, concentration or daily routine.)",
+    "o": [
+     "Not at all",
+     "Slightly",
+     "Moderately",
+     "Significantly",
+     "Severely"
+    ]
+   },
+   {
+    "q": "How difficult has it been for you to manage or cope with this concern?",
+    "o": [
+     "Not difficult at all",
+     "Slightly difficult",
+     "Moderately difficult",
+     "Very difficult",
+     "Extremely difficult. I feel unable to manage it on my own"
+    ]
+   },
+   {
+    "q": "How has this concern changed over time?",
+    "o": [
+     "It has become less intense",
+     "It has remained about the same",
+     "It has become more intense",
+     "It comes and goes",
+     "I’m not sure"
+    ]
+   },
+   {
+    "q": "A question about your safety. Have you recently had thoughts of hurting yourself, ending your life, or hurting someone else?",
+    "o": [
+     "No",
+     "Yes",
+     "I’m not sure",
+     "Prefer not to answer"
+    ],
+    "urgentOn": [
+     1,
+     2
+    ]
+   }
+  ]
+ }
+}

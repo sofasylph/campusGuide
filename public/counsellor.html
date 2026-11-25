@@ -1,0 +1,34 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Counsellor view</title>
+<style>
+:root{--indigo:#2A1A6E;--ink:#1D1638;--muted:#6B6485;--lilac:#DCD0F8;--paper:#F6F3EC;--card:#fff;--violet:#7B61FF;--pink:#F7C3D6}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Poppins,system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:24px 16px}h1{color:var(--indigo);margin:0 0 4px}.sub{color:var(--muted);font-size:13px;margin:0 0 16px}
+input,select,button{font:inherit}input[type=password]{padding:10px 14px;border-radius:20px;border:2px solid var(--indigo)}
+button{background:var(--indigo);color:#fff;border:0;border-radius:20px;padding:10px 18px;cursor:pointer}
+.row{background:var(--card);border-radius:18px;padding:14px 16px;margin-top:10px;box-shadow:inset 0 0 0 2px var(--lilac)}
+.tag{display:inline-block;border-radius:12px;padding:2px 10px;font-size:12px;background:var(--lilac)}.tag.flag{background:var(--pink)}
+.row p{margin:6px 0;font-size:14px}.muted{color:var(--muted);font-size:12px}select{border-radius:12px;padding:4px 8px;border:2px solid var(--lilac)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--lilac)}.dot.green{background:#4C7A5E}.dot.yellow{background:#C9A227}.dot.red{background:#B4483F}
+</style></head><body><main>
+<h1>Counsellor view</h1><p class="sub">Demo only. Shows notes students chose to send and safety flags. It never shows chats.</p>
+<div id="login"><input type="password" id="key" placeholder="Counsellor key"> <button id="go">Open</button></div>
+<div id="app" hidden><label><input type="checkbox" id="sum"> Show student notes (off by default)</label> <span class="muted" id="msg"></span><div id="list"></div></div>
+</main><script>
+var key='', $=function(i){return document.getElementById(i);};
+function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function api(p,o){o=o||{};o.headers={'x-counsellor-key':key,'Content-Type':'application/json'};return fetch(p,o).then(function(r){if(r.status===403)throw new Error('key');return r.json();});}
+function load(){api('/api/counsellor/list?summaries='+($('sum').checked?1:0)).then(function(rows){
+  $('login').hidden=true;$('app').hidden=false;$('msg').textContent='';
+  $('list').innerHTML=rows.length?rows.map(function(r){
+    var s=r.summary?'<p><b>Going on:</b> '+esc(r.summary.concern)+'<br><b>For how long:</b> '+esc(r.summary.duration)+'<br><b>Tried:</b> '+esc(r.summary.tried)+'</p>':(r.kind==='note'?'<p class="muted">Note hidden. Tick the box above to read it.</p>':'');
+    var rs=(r.results||[]).map(function(x){if(x.kind==='survey')return '<p><b>'+esc(x.name)+'</b><br>'+x.lines.map(function(l){return esc(l[0])+' \u2192 '+esc(l[1]);}).join('<br>')+'</p>';return '<p><span class="dot '+(x.flag||'')+'"></span><b>'+esc(x.name)+'</b> '+esc(x.score)+'/'+esc(x.max)+(x.label?' \u00b7 '+esc(x.label):'')+(x.descriptive?' <span class="muted">(descriptive grouping, not a clinical cut-off)</span>':'')+'<br><span class="muted">'+esc(x.version)+' \u00b7 '+esc(x.method)+' \u00b7 '+new Date(x.date).toLocaleDateString()+(x.thresholdsApproved?'':' \u00b7 thresholds pending counsellor approval')+(x.wordingVerified?'':' \u00b7 wording pending verification')+'</span></p>';}).join('');
+    var c=r.contact?'<p><b>Contact added by student:</b> '+esc(r.contact)+'</p>':'<p class="muted">No contact given (anonymous).</p>';
+    return '<div class="row"><span class="tag '+r.kind+'">'+(r.kind==='flag'?'Safety flag':'Note from student')+'</span> <span class="muted">'+new Date(r.ts).toLocaleString()+' · '+esc(r.id)+'</span>'+s+rs+c
+      +'<select data-id="'+esc(r.id)+'">'+['new','in_progress','resolved'].map(function(x){return '<option value="'+x+'"'+(x===r.status?' selected':'')+'>'+x.replace('_',' ')+'</option>';}).join('')+'</select></div>';
+  }).join(''):'<p class="sub">Nothing yet.</p>';
+}).catch(function(){$('login').hidden=false;$('app').hidden=true;alert('Wrong key, or the dashboard is switched off on the server.');});}
+$('go').onclick=function(){key=$('key').value;load();};
+$('sum').onchange=load;
+$('list').onchange=function(e){var id=e.target.dataset.id;if(id)api('/api/counsellor/status',{method:'POST',body:JSON.stringify({id:id,status:e.target.value})});};
+setInterval(function(){if(key)load();},30000);
+</script></body></html>
