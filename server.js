@@ -5,7 +5,18 @@ try { fs.readFileSync(path.join(__dirname, '.env'), 'utf8').split('\n').forEach(
   if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
 }); } catch (e) {}
 const PORT = process.env.PORT || 3000, KEY = process.env.ANTHROPIC_API_KEY, MODEL = process.env.MODEL || 'claude-sonnet-5-5';
-const read = f => fs.readFileSync(path.join(__dirname, f), 'utf8'); // re-read each request: edit the JSON/prompt without restarting
+// Re-read each request: edit the JSON/prompt without restarting. Each file is named literally so hosts that bundle
+// only the files they can see the code use (Vercel) include them; a path built from a variable gets left out.
+const FILES = {
+  'prompt.md': () => fs.readFileSync(path.join(__dirname, 'prompt.md'), 'utf8'),
+  'resources.json': () => fs.readFileSync(path.join(__dirname, 'resources.json'), 'utf8'),
+  'safety-rules.json': () => fs.readFileSync(path.join(__dirname, 'safety-rules.json'), 'utf8'),
+  'scales.json': () => fs.readFileSync(path.join(__dirname, 'scales.json'), 'utf8'),
+  'lang-glossary.json': () => fs.readFileSync(path.join(__dirname, 'lang-glossary.json'), 'utf8')
+};
+const read = f => FILES[f]();
+// Vercel's filesystem is read-only except /tmp. Only the translation cache goes there: losing it costs a re-translation, nothing more.
+const CACHE_DIR = process.env.VERCEL ? '/tmp/campus-guide' : path.join(__dirname, 'data');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.pdf': 'application/pdf' };
 const send = (res, code, body) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(typeof body === 'string' ? body : JSON.stringify(body)); };
 
@@ -47,7 +58,7 @@ async function apiWhy(r) { try { const j = await r.json(); return ': ' + String(
 async function translate(body, req) {
   const L = LN[body.lang], strs = (Array.isArray(body.strings) ? body.strings : []).slice(0, 40).map(s => clip(s, 300)).filter(Boolean);
   if (!L || !strs.length) return { code: 400, out: { error: 'bad_request' } };
-  let cache = {}; const f = path.join(__dirname, 'data', 'translations.json'); try { cache = JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) {}
+  let cache = {}; const f = path.join(CACHE_DIR, 'translations.json'); try { cache = JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) {}
   const key = s => body.lang + '|' + s, miss = strs.filter(s => !(key(s) in cache));
   if (miss.length) {
     if (!KEY) return { code: 503, out: { error: 'no_key' } };
@@ -59,7 +70,7 @@ async function translate(body, req) {
     try { out = JSON.parse(t.match(/\[[\s\S]*\]/)[0]); } catch (e) { out = null; }
     if (!Array.isArray(out) || out.length !== miss.length) return { code: 502, out: { error: 'bad_translation' } };
     miss.forEach((s, i) => { cache[key(s)] = String(out[i]); });
-    fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(cache));
+    try { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(cache)); } catch (e) { console.error('translation cache not saved:', e.code); } // the student still gets the translation
   }
   return { code: 200, out: { map: Object.fromEntries(strs.filter(s => key(s) in cache).map(s => [s, cache[key(s)]])) } };
 }
