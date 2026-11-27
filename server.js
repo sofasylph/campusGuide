@@ -53,7 +53,7 @@ async function translate(body, req) {
     if (!KEY) return { code: 503, out: { error: 'no_key' } };
     if (!allowed(req, 'translate')) return { code: 429, out: { error: 'busy' } }; // only calls that reach the model count; cached phrases are free
     const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: MODEL, max_tokens: 4000, system: 'Translate short interface texts of a student wellbeing app from English into ' + L + ' (Devanagari). Use simple, warm, everyday wording a student would actually say, not clinical or word-for-word. Keep numbers, punctuation and line breaks. Prefer these expressions when the concept appears (given in Roman letters, write them in Devanagari): ' + glossLine() + '. Reply with a JSON array of strings, same order and same length, and nothing else.', messages: [{ role: 'user', content: JSON.stringify(miss) }] }) });
+      body: JSON.stringify({ model: MODEL, max_tokens: 16000, output_config: { effort: 'low' }, system: 'Translate short interface texts of a student wellbeing app from English into ' + L + ' (Devanagari). Use simple, warm, everyday wording a student would actually say, not clinical or word-for-word. Keep numbers, punctuation and line breaks. Prefer these expressions when the concept appears (given in Roman letters, write them in Devanagari): ' + glossLine() + '. Reply with a JSON array of strings, same order and same length, and nothing else.', messages: [{ role: 'user', content: JSON.stringify(miss) }] }) });
     if (!r.ok) throw new Error('anthropic ' + r.status + await apiWhy(r));
     const t = ((await r.json()).content || []).map(b => b.text || '').join(''); let out;
     try { out = JSON.parse(t.match(/\[[\s\S]*\]/)[0]); } catch (e) { out = null; }
@@ -71,7 +71,8 @@ async function vet(text) {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: MODEL, max_tokens: 10, system: 'You check one message from a student for a safety app. The message may be in English, Hindi, Marathi or a mix, including Roman letters. Decide whether it could be a real expression of suicidal thoughts or of wanting to harm oneself or someone else. Everyday idioms such as "this assignment is killing me" or "kill time" are idioms. If you are not sure, say unsure. Reply with exactly one word: genuine, idiom or unsure.', messages: [{ role: 'user', content: text }] })
+      // The model thinks before answering and that counts toward max_tokens, so a tiny limit leaves no room for the one-word answer.
+      body: JSON.stringify({ model: MODEL, max_tokens: 1024, output_config: { effort: 'low' }, system: 'You check one message from a student for a safety app. The message may be in English, Hindi, Marathi or a mix, including Roman letters. Decide whether it could be a real expression of suicidal thoughts or of wanting to harm oneself or someone else. Everyday idioms such as "this assignment is killing me" or "kill time" are idioms. If you are not sure, say unsure. Reply with exactly one word: genuine, idiom or unsure.', messages: [{ role: 'user', content: text }] })
     });
     if (!r.ok) return 'unsure';
     const t = ((await r.json()).content || []).map(b => b.text || '').join('').toLowerCase();
@@ -132,12 +133,14 @@ async function chat(body, req) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 800, system, messages: msgs, tools: [RESPOND], tool_choice: { type: 'auto' } })
+    body: JSON.stringify({ model: MODEL, max_tokens: 4000, system, messages: msgs, tools: [RESPOND], tool_choice: { type: 'auto' } }) // thinking counts toward max_tokens
   });
   if (!r.ok) throw new Error('anthropic ' + r.status + await apiWhy(r));
-  const blocks = (await r.json()).content || [], text = blocks.map(b => b.text || '').join('');
+  const j = await r.json(), blocks = j.content || [], text = blocks.map(b => b.text || '').join('');
 
-  const tu = blocks.find(b => b.type === 'tool_use'), o = tu ? tu.input : looseParse(text);
+  const tu = blocks.find(b => b.type === 'tool_use');
+  let o = tu ? tu.input : looseParse(text);
+  if (j.stop_reason === 'max_tokens') { console.error('chat: reply cut off at max_tokens'); o = { suggest_urgent: o.suggest_urgent }; } // a half sentence is worse than the fallback
   if (o.suggest_urgent) return { code: 200, out: { escalate: true } };
   const ids = Array.isArray(o.resource_ids) ? o.resource_ids : [];
   return { code: 200, out: {
