@@ -796,10 +796,18 @@ SC.arrive = function(){
 };
 
 /* 2 intro (original, English only) */
+// Moves the purple dot along the dotted path and stops on the last white dot. It starts on the path, so it can never sit off it.
+function introDot(){
+  var p=document.getElementById('introPath'), g=document.getElementById('introDot'); if(!p||!g) return;
+  var L=p.getTotalLength(), t0=null, D=2400, put=function(k){ var pt=p.getPointAtLength(L*k); g.setAttribute('transform','translate('+pt.x+' '+pt.y+')'); };
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ put(1); return; }
+  var ease=function(x){ return x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2; };
+  (function f(ts){ if(!g.isConnected) return; if(ts!==undefined){ if(t0===null) t0=ts; var k=Math.min(1,(ts-t0)/D); put(ease(k)); if(k>=1) return; } requestAnimationFrame(f); })();
+}
 SC.intro = function(){
   var cards=[
     ['This is a guide. It is not a counsellor and it cannot diagnose.',
-     '<svg viewBox="0 0 300 246"><path d="M60 200C140 190 150 160 120 150C70 134 110 100 200 96" pathLength="100" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-dasharray="0.01 7.1428"/><circle cx="200" cy="96" r="6" fill="#fff"/><g><circle r="22" fill="#7B61FF" opacity=".22"/><circle r="12" fill="#7B61FF"/><animateMotion path="M60 200C140 190 150 160 120 150C70 134 110 100 200 96" dur="2.4s" begin="0s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.45 0 0.2 1"/></g></svg>'],
+     '<svg viewBox="0 0 300 246"><path d="M60 200C140 190 150 160 120 150C70 134 110 100 200 96" pathLength="100" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-dasharray="0.01 7.1428"/><circle cx="200" cy="96" r="6" fill="#fff"/><path id="introPath" d="M60 200C140 190 150 160 120 150C70 134 110 100 200 96" fill="none" stroke="none"/><g id="introDot" transform="translate(60 200)"><circle r="22" fill="#7B61FF" opacity=".22"/><circle r="12" fill="#7B61FF"/></g></svg>'],
     ['A counsellor reviews flagged sessions.',
      '<svg viewBox="0 0 300 246"><path d="M40 216C110 210 120 190 160 186" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-dasharray="2 22"/><circle cx="46" cy="214" r="11" fill="#7B61FF"/><path d="M150 206V96l56-44l56 44v110z" fill="#F7C3D6"/><rect class="win" x="178" y="104" width="56" height="60" rx="10" fill="#B9A8EE"/><circle cx="206" cy="128" r="10" fill="#2A1A6E"/><path d="M188 164c2-20 34-20 36 0z" fill="#2A1A6E"/></svg>'],
     ['You don’t need an account. You can see and delete what this holds at any time.',
@@ -808,7 +816,7 @@ SC.intro = function(){
   var i=S.introCard, c=cards[i];
   var dots='<div class="dots">'+cards.map(function(_,n){return '<i class="'+(n===i?'on':'')+'"></i>';}).join('')+'</div>';
   var extra = i===2 ? '<div class="choices">'+['English','हिंदी','मराठी'].map(function(l){return '<button class="chip '+(S.lang===l?'on':'')+'" data-act="lang" data-v="'+l+'">'+l+'</button>';}).join('')+'</div><p class="sub">Hindi and Marathi are machine-translated until counsellors review them.</p>' : '';
-  return {bg:'paper', html: dots+'<div class="pic">'+c[1]+'</div><h1 style="font-size:24px">'+c[0]+'</h1>'+extra+'<div class="push"><button class="pill" data-act="introNext">'+(i===2?'Start':'Next')+'</button><button class="link" data-act="go" data-to="usemode">Skip</button></div>'};
+  return {bg:'paper', html: dots+'<div class="pic">'+c[1]+'</div><h1 style="font-size:24px">'+c[0]+'</h1>'+extra+'<div class="push"><button class="pill" data-act="introNext">'+(i===2?'Start':'Next')+'</button><button class="link" data-act="go" data-to="usemode">Skip</button></div>', after: i===0 ? introDot : null};
 };
 
 /* 2b anonymous or personalised (new) */
